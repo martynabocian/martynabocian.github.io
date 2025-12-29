@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rozprawa doktorska Martyny Bocian</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #f0f0f0 url('data/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            gap: 2rem;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(240, 240, 240, 0.85);
+            z-index: -1;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        input {
+            padding: 0.5rem;
+            margin: 1rem 0;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 0.5rem 2rem;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .error {
+            color: red;
+            margin-top: 1rem;
+        }
+        #content {
+            width: 100%;
+            height: 100vh;
+            border: none;
+        }
+        .header-text {
+            text-align: center;
+            font-size: 1.15em;
+            color: #333;
+            font-weight: bold;
+            line-height: 1.6;
+        }
+        #loadingMessage {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            z-index: 10001;
+        }
+    </style>
+</head>
+<body>
+    <div id="headerText" class="header-text">
+        Aplikacja powstała jako część rozprawy doktorskiej mgr inż. Martyny Kowalskiej (wcześniej Bocian).<br>
+        System zabezpieczony jest hasłem.
+    </div>
+    <div id="loginBox" class="login-container">
+        <h2>Wprowadź hasło</h2>
+        <input type="password" id="passwordInput" placeholder="Hasło">
+        <br>
+        <button onclick="checkPassword()">Zatwierdź</button>
+        <div id="error" class="error"></div>
+    </div>
+
+    <div id="loadingMessage">Ładowanie...</div>
+    <iframe id="content" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 10000;"></iframe>
+
+    <script>
+        let PASSWORD_HASH = "";
+        let authenticated = false;
+
+        fetch('data/content.txt')
+            .then(response => response.text())
+            .then(data => {
+                PASSWORD_HASH = data.trim();
+            })
+            .catch(error => {
+                console.error('Error loading password hash:', error);
+            });
+
+        // Use CryptoJS library for SHA-256 hashing
+        function hashPassword(password) {
+            return CryptoJS.SHA256(password).toString();
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = '';
+
+            const inputHash = hashPassword(input);
+
+            if (inputHash === PASSWORD_HASH) {
+                authenticated = true;
+                document.getElementById('headerText').style.display = 'none';
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('loadingMessage').style.display = 'block';
+                const iframe = document.getElementById('content');
+
+                // Hide loading message when iframe loads
+                iframe.onload = function() {
+                    document.getElementById('loadingMessage').style.display = 'none';
+                };
+
+                iframe.style.display = 'block';
+                // Small delay to ensure authenticated flag is set before iframe loads
+                setTimeout(function() {
+                    iframe.src = 'plot.html';
+                }, 50);
+            } else {
+                errorDiv.textContent = 'Nieprawidłowe hasło';
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        window.addEventListener('message', function(e) {
+            if (e.data === 'checkAuth') {
+                e.source.postMessage({authenticated: authenticated}, '*');
+            }
+        });
+    </script>
+</body>
+</html>
