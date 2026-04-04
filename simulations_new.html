@@ -263,12 +263,12 @@
                 $$E_d = E_o - E_p \quad [\text{GJ/d}]$$
             </div>
             <div class="input-group">
-                <label>$E_o$ &mdash; zużycie ciepła końcowe dla danego dnia [GJ/d]</label>
-                <input type="number" id="d_E0" step="0.0001" placeholder="np. 0.1437" oninput="calc_d()">
+                <label>$E_o$ &mdash; zużycie ciepła końcowe dla danego dnia [GJ]</label>
+                <input type="text" inputmode="decimal" id="d_E0" placeholder="np. 0,1437" oninput="calc_d()">
             </div>
             <div class="input-group">
-                <label>$E_p$ &mdash; zużycie ciepła początkowe dla danego dnia [GJ/d]</label>
-                <input type="number" id="d_Ep" step="0.0001" placeholder="np. 0.1109" oninput="calc_d()">
+                <label>$E_p$ &mdash; zużycie ciepła początkowe dla danego dnia [GJ]</label>
+                <input type="text" inputmode="decimal" id="d_Ep" placeholder="np. 0,1109" oninput="calc_d()">
             </div>
             <div class="spacer"></div>
             <div class="result-box" id="res_d">&mdash;</div>
@@ -281,12 +281,12 @@
                 $$E_m = E_k - E_n \quad [\text{GJ/miesiąc}]$$
             </div>
             <div class="input-group">
-                <label>$E_k$ &mdash; zużycie ciepła końcowe dla danego miesiąca [GJ/miesiąc]</label>
-                <input type="number" id="m_Ek" step="0.001" placeholder="np. 4.311" oninput="calc_m()">
+                <label>$E_k$ &mdash; zużycie ciepła końcowe dla danego miesiąca [GJ]</label>
+                <input type="text" inputmode="decimal" id="m_Ek" placeholder="np. 4,311" oninput="calc_m()">
             </div>
             <div class="input-group">
-                <label>$E_n$ &mdash; zużycie ciepła początkowe dla danego miesiąca [GJ/miesiąc]</label>
-                <input type="number" id="m_En" step="0.001" placeholder="np. 3.327" oninput="calc_m()">
+                <label>$E_n$ &mdash; zużycie ciepła początkowe dla danego miesiąca [GJ]</label>
+                <input type="text" inputmode="decimal" id="m_En" placeholder="np. 3,327" oninput="calc_m()">
             </div>
             <div class="spacer"></div>
             <div class="result-box" id="res_m">&mdash;</div>
@@ -299,12 +299,12 @@
                 $$E_s = E_r - E_t \quad [\text{GJ/sezon}]$$
             </div>
             <div class="input-group">
-                <label>$E_r$ &mdash; zużycie ciepła końcowe dla danego sezonu [GJ/sezon]</label>
-                <input type="number" id="s_Er" step="0.01" placeholder="np. 28.74" oninput="calc_s()">
+                <label>$E_r$ &mdash; zużycie ciepła końcowe dla danego sezonu [GJ]</label>
+                <input type="text" inputmode="decimal" id="s_Er" placeholder="np. 28,74" oninput="calc_s()">
             </div>
             <div class="input-group">
-                <label>$E_t$ &mdash; zużycie ciepła początkowe dla danego sezonu [GJ/sezon]</label>
-                <input type="number" id="s_Eo" step="0.01" placeholder="np. 22.18" oninput="calc_s()">
+                <label>$E_t$ &mdash; zużycie ciepła początkowe dla danego sezonu [GJ]</label>
+                <input type="text" inputmode="decimal" id="s_Eo" placeholder="np. 22,18" oninput="calc_s()">
             </div>
             <div class="spacer"></div>
             <div class="result-box" id="res_s">&mdash;</div>
@@ -320,15 +320,15 @@
         <div class="inputs-row">
             <div class="input-group">
                 <label>$T_1$ &mdash; temperatura zasilania [°C]</label>
-                <input type="number" id="hw_T1" step="0.01" min="0" max="100" placeholder="np. 70" oninput="calcPanel2();calcMu()">
+                <input type="text" inputmode="decimal" id="hw_T1" placeholder="np. 70" oninput="calcPanel2();calcMu()">
             </div>
             <div class="input-group">
                 <label>$T_2$ &mdash; temperatura powrotu [°C]</label>
-                <input type="number" id="hw_T2" step="0.01" min="0" max="100" placeholder="np. 40" oninput="calcPanel2();calcMu()">
+                <input type="text" inputmode="decimal" id="hw_T2" placeholder="np. 40" oninput="calcPanel2();calcMu()">
             </div>
             <div class="input-group">
                 <label>$\dot{V}$ &mdash; przepływ objętościowy [cm³/h]</label>
-                <input type="number" id="hw_Vdot" step="0.1" placeholder="np. 500" oninput="calcPanel2()">
+                <input type="text" inputmode="decimal" id="hw_Vdot" placeholder="np. 500" oninput="calcPanel2()">
             </div>
         </div>
 
@@ -373,11 +373,11 @@
         <div class="inputs-row">
             <div class="input-group">
                 <label style="white-space:nowrap;">$t_1$ &mdash; temperatura na wyjściu z wymiennika [°C]</label>
-                <input type="number" id="hw_t1" step="0.01" min="0" max="100" placeholder="np. 55" oninput="calcMu()">
+                <input type="text" inputmode="decimal" id="hw_t1" placeholder="np. 55" oninput="calcMu()">
             </div>
             <div class="input-group">
                 <label style="white-space:nowrap;">$t_2$ &mdash; temperatura na wejściu do wymiennika [°C]</label>
-                <input type="number" id="hw_t2" step="0.01" min="0" max="100" placeholder="np. 10" oninput="calcMu()">
+                <input type="text" inputmode="decimal" id="hw_t2" placeholder="np. 10" oninput="calcMu()">
             </div>
         </div>
         <div class="result-box" id="res_mu">&mdash;</div>
@@ -427,7 +427,7 @@
         <div class="inputs-row" style="max-width:400px;">
             <div class="input-group">
                 <label>$k$ &mdash; liczba godzin pracy w dobie [h]</label>
-                <input type="number" id="pump_k" step="0.01" min="0" max="24" placeholder="np. 8" oninput="calcPumpWork()">
+                <input type="text" inputmode="decimal" id="pump_k" placeholder="np. 8" oninput="calcPumpWork()">
             </div>
         </div>
         <div class="result-box" id="res_pump_w">&mdash;</div>
@@ -438,6 +438,42 @@
 </div>
 
 <script>
+    // ===== Helpers =====
+    function fmt(n, d) { return n.toFixed(d).replace('.', ','); }
+    function pn(s) { return parseFloat(String(s).replace(',', '.')); }
+
+    // Block invalid characters before they enter decimal inputs
+    function isDecimalInput(el) {
+        return el.tagName === 'INPUT' && el.type === 'text' &&
+               el.getAttribute('inputmode') === 'decimal';
+    }
+    document.addEventListener('beforeinput', function(e) {
+        if (!isDecimalInput(e.target)) return;
+        var data = e.data;
+        if (data == null) return; // allow backspace, delete, etc.
+        // Convert dots to commas in pasted/typed data
+        data = data.replace(/\./g, ',');
+        // Block if any non-digit, non-comma character
+        if (/[^0-9,]/.test(data)) { e.preventDefault(); return; }
+        // Block comma if one already exists in the value
+        if (data.indexOf(',') !== -1 && e.target.value.indexOf(',') !== -1) {
+            // Unless the existing comma is inside the selection (being replaced)
+            var start = e.target.selectionStart, end = e.target.selectionEnd;
+            var selected = e.target.value.substring(start, end);
+            if (selected.indexOf(',') === -1) { e.preventDefault(); return; }
+        }
+    });
+    // Handle dot→comma conversion for typed single characters
+    document.addEventListener('input', function(e) {
+        if (!isDecimalInput(e.target)) return;
+        var pos = e.target.selectionStart;
+        var v = e.target.value.replace(/\./g, ',');
+        if (v !== e.target.value) {
+            e.target.value = v;
+            e.target.setSelectionRange(pos, pos);
+        }
+    });
+
     // ===== Lookup tables =====
     let waterData = null; // array of [temp, rho, cp] from CSV
 
@@ -475,35 +511,35 @@
     function calc_d() {
         var v1 = document.getElementById('d_E0').value, v2 = document.getElementById('d_Ep').value;
         if (v1 === '' || v2 === '') { document.getElementById('res_d').textContent = '—'; return; }
-        const Eo = parseFloat(v1), Ep = parseFloat(v2);
+        const Eo = pn(v1), Ep = pn(v2);
         if (isNaN(Eo) || isNaN(Ep)) { document.getElementById('res_d').innerHTML = 'Wartości muszą być liczbami'; return; }
         if (Eo < 0 || Ep < 0) { document.getElementById('res_d').innerHTML = '<i>E</i><sub>o</sub> i <i>E</i><sub>p</sub> muszą być ≥ 0'; return; }
         if (Eo < Ep) { document.getElementById('res_d').innerHTML = '<i>E</i><sub>o</sub> musi być ≥ <i>E</i><sub>p</sub>'; return; }
         const Ed = Eo - Ep;
         document.getElementById('res_d').innerHTML =
-            '<b>E<sub>d</sub></b> = ' + Eo.toFixed(4) + ' \u2212 ' + Ep.toFixed(4) + ' = <strong>' + Ed.toFixed(4) + ' GJ/d</strong>';
+            '<b>E<sub>d</sub></b> = ' + fmt(Eo,4) + ' \u2212 ' + fmt(Ep,4) + ' = <strong>' + fmt(Ed,4) + ' GJ/d</strong>';
     }
     function calc_m() {
         var v1 = document.getElementById('m_Ek').value, v2 = document.getElementById('m_En').value;
         if (v1 === '' || v2 === '') { document.getElementById('res_m').textContent = '—'; return; }
-        const Ek = parseFloat(v1), En = parseFloat(v2);
+        const Ek = pn(v1), En = pn(v2);
         if (isNaN(Ek) || isNaN(En)) { document.getElementById('res_m').innerHTML = 'Wartości muszą być liczbami'; return; }
         if (Ek < 0 || En < 0) { document.getElementById('res_m').innerHTML = '<i>E</i><sub>k</sub> i <i>E</i><sub>n</sub> muszą być ≥ 0'; return; }
         if (Ek < En) { document.getElementById('res_m').innerHTML = '<i>E</i><sub>k</sub> musi być ≥ <i>E</i><sub>n</sub>'; return; }
         const Em = Ek - En;
         document.getElementById('res_m').innerHTML =
-            '<b>E<sub>m</sub></b> = ' + Ek.toFixed(3) + ' \u2212 ' + En.toFixed(3) + ' = <strong>' + Em.toFixed(3) + ' GJ/miesi\u0105c</strong>';
+            '<b>E<sub>m</sub></b> = ' + fmt(Ek,3) + ' \u2212 ' + fmt(En,3) + ' = <strong>' + fmt(Em,3) + ' GJ/miesi\u0105c</strong>';
     }
     function calc_s() {
         var v1 = document.getElementById('s_Er').value, v2 = document.getElementById('s_Eo').value;
         if (v1 === '' || v2 === '') { document.getElementById('res_s').textContent = '—'; return; }
-        const Er = parseFloat(v1), Et = parseFloat(v2);
+        const Er = pn(v1), Et = pn(v2);
         if (isNaN(Er) || isNaN(Et)) { document.getElementById('res_s').innerHTML = 'Wartości muszą być liczbami'; return; }
         if (Er < 0 || Et < 0) { document.getElementById('res_s').innerHTML = '<i>E</i><sub>r</sub> i <i>E</i><sub>t</sub> muszą być ≥ 0'; return; }
         if (Er < Et) { document.getElementById('res_s').innerHTML = '<i>E</i><sub>r</sub> musi być ≥ <i>E</i><sub>t</sub>'; return; }
         const Es = Er - Et;
         document.getElementById('res_s').innerHTML =
-            '<b>E<sub>s</sub></b> = ' + Er.toFixed(2) + ' \u2212 ' + Et.toFixed(2) + ' = <strong>' + Es.toFixed(2) + ' GJ/sezon</strong>';
+            '<b>E<sub>s</sub></b> = ' + fmt(Er,2) + ' \u2212 ' + fmt(Et,2) + ' = <strong>' + fmt(Es,2) + ' GJ/sezon</strong>';
     }
 
     // ===== Row 2 =====
@@ -512,9 +548,9 @@
     function calcPanel2() {
         var vT1 = document.getElementById('hw_T1').value;
         var vT2 = document.getElementById('hw_T2').value;
-        const T1 = parseFloat(vT1);
-        const T2 = parseFloat(vT2);
-        const Vdot = parseFloat(document.getElementById('hw_Vdot').value);
+        const T1 = pn(vT1);
+        const T2 = pn(vT2);
+        const Vdot = pn(document.getElementById('hw_Vdot').value);
 
         function setAllP2(msg) {
             ['res_Tsr','res_TsrK','res_rho','res_cw','res_Qcwu'].forEach(function(id) {
@@ -536,17 +572,17 @@
         // T_sr
         lastTsr = (T1 + T2) / 2;
         document.getElementById('res_Tsr').innerHTML =
-            '<b>T<sub>śr</sub></b> = (' + T1.toFixed(2) + ' + ' + T2.toFixed(2) + ') / 2 = <strong>' + lastTsr.toFixed(2) + ' °C</strong>';
+            '<b>T<sub>śr</sub></b> = (' + fmt(T1,2) + ' + ' + fmt(T2,2) + ') / 2 = <strong>' + fmt(lastTsr,2) + ' °C</strong>';
 
         // T_sr' (Kelvin)
         const TsrK = lastTsr + 273.15;
         document.getElementById('res_TsrK').innerHTML =
-            '<b>T\u2032<sub>śr</sub></b> = ' + lastTsr.toFixed(2) + ' + 273,15 = <strong>' + TsrK.toFixed(2) + ' K</strong>';
+            '<b>T\u2032<sub>śr</sub></b> = ' + fmt(lastTsr,2) + ' + 273,15 = <strong>' + fmt(TsrK,2) + ' K</strong>';
 
         // rho (formula using Kelvin)
         lastRho = 1000 - (0.00198582 * (TsrK + 10) * Math.pow(TsrK - 277, 2)) / (TsrK - 205.8);
         document.getElementById('res_rho').innerHTML =
-            '<b>\u03C1<sub>w</sub>(' + TsrK.toFixed(2) + ' K)</b> = <strong>' + lastRho.toFixed(2) + ' kg/m\u00B3</strong>';
+            '<b>\u03C1<sub>w</sub>(' + fmt(TsrK,2) + ' K)</b> = <strong>' + fmt(lastRho,2) + ' kg/m\u00B3</strong>';
 
         if (lastTsr < 0 || lastTsr > 100) {
             document.getElementById('res_cw').innerHTML = 'T<sub>śr</sub> poza zakresem tablicy (0–100 °C)';
@@ -557,7 +593,7 @@
         // c_w (CSV has cp in kJ/(kg·K), convert to J/(kg·K) for Q formula)
         lastCw = interpolateCol(lastTsr, 2); // kJ/(kg·K)
         document.getElementById('res_cw').innerHTML =
-            '<b>c<sub>w</sub>(' + lastTsr.toFixed(2) + ' °C)</b> = <strong>' + lastCw.toFixed(3) + ' kJ/(kg\u00B7K)</strong>';
+            '<b>c<sub>w</sub>(' + fmt(lastTsr,2) + ' °C)</b> = <strong>' + fmt(lastCw,3) + ' kJ/(kg\u00B7K)</strong>';
 
         // Q_cwu
         if (isNaN(Vdot)) {
@@ -572,7 +608,7 @@
         const cwJ = lastCw * 1000; // convert kJ to J
         const Q = (Vdot * lastRho * cwJ * dT) / (3600 * 1000);
         document.getElementById('res_Qcwu').innerHTML =
-            '<b>Q<sub>cwu śr</sub></b> = (' + Vdot + ' \u00D7 ' + lastRho.toFixed(2) + ' \u00D7 ' + cwJ.toFixed(1) + ' \u00D7 ' + dT.toFixed(2) + ') / (3600 \u00D7 1000) = <strong>' + Q.toFixed(3) + ' kW</strong>';
+            '<b>Q<sub>cwu śr</sub></b> = (' + fmt(Vdot,1) + ' \u00D7 ' + fmt(lastRho,2) + ' \u00D7 ' + fmt(cwJ,1) + ' \u00D7 ' + fmt(dT,2) + ') / (3600 \u00D7 1000) = <strong>' + fmt(Q,3) + ' kW</strong>';
     }
 
     function calcMu() {
@@ -583,8 +619,8 @@
         if (vt1 === '' || vt2 === '' || vT1 === '' || vT2 === '') {
             document.getElementById('res_mu').textContent = '—'; return;
         }
-        const T1 = parseFloat(vT1), T2 = parseFloat(vT2);
-        const t1 = parseFloat(vt1), t2 = parseFloat(vt2);
+        const T1 = pn(vT1), T2 = pn(vT2);
+        const t1 = pn(vt1), t2 = pn(vt2);
         if (isNaN(T1) || isNaN(T2) || isNaN(t1) || isNaN(t2)) {
             document.getElementById('res_mu').innerHTML = 'Wartości muszą być liczbami';
             return;
@@ -605,7 +641,7 @@
         const dt = t1 - t2;
         const mu = (dt / dT) * 100;
         document.getElementById('res_mu').innerHTML =
-            '<b>\u03BC<sub>cwu</sub></b> = (' + t1.toFixed(2) + ' \u2212 ' + t2.toFixed(2) + ') / (' + T1.toFixed(2) + ' \u2212 ' + T2.toFixed(2) + ') = <strong>' + mu.toFixed(2) + ' %</strong>';
+            '<b>\u03BC<sub>cwu</sub></b> = (' + fmt(t1,2) + ' \u2212 ' + fmt(t2,2) + ') / (' + fmt(T1,2) + ' \u2212 ' + fmt(T2,2) + ') = <strong>' + fmt(mu,2) + ' %</strong>';
     }
 
     // ===== Row 3 =====
@@ -618,8 +654,8 @@
         tr.id = 'cop-row-' + copRowCount;
         tr.innerHTML =
             '<td>' + copRowCount + '</td>' +
-            '<td><input type="number" id="cop_Qg_' + copRowCount + '" step="0.01" placeholder="Q_g" oninput="calcCOP()"></td>' +
-            '<td><input type="number" id="cop_Eel_' + copRowCount + '" step="0.01" placeholder="E_el" oninput="calcCOP()"></td>' +
+            '<td><input type="text" inputmode="decimal" id="cop_Qg_' + copRowCount + '" placeholder="Q_g" oninput="calcCOP()"></td>' +
+            '<td><input type="text" inputmode="decimal" id="cop_Eel_' + copRowCount + '" placeholder="E_el" oninput="calcCOP()"></td>' +
             '<td class="result-cell" id="cop_res_' + copRowCount + '">&mdash;</td>' +
             '<td><button class="remove-row-btn" onclick="removeCopRow(' + copRowCount + ')">&times;</button></td>';
         tbody.appendChild(tr);
@@ -648,8 +684,8 @@
             idx++;
             var inputs = row.querySelectorAll('input');
             var resCell = row.querySelector('.result-cell');
-            var Qg = parseFloat(inputs[0].value);
-            var Eel = parseFloat(inputs[1].value);
+            var Qg = pn(inputs[0].value);
+            var Eel = pn(inputs[1].value);
             if (inputs[0].value === '' || inputs[1].value === '') {
                 resCell.textContent = '—';
                 resCell.style.color = '#999';
@@ -671,7 +707,7 @@
                 return;
             }
             var cop = Qg / Eel;
-            resCell.textContent = cop.toFixed(2);
+            resCell.textContent = fmt(cop,2);
             resCell.style.color = '#007bff';
             xVals.push(idx);
             yVals.push(cop);
@@ -715,7 +751,7 @@
     function calcPumpWork() {
         var v = document.getElementById('pump_k').value;
         if (v === '') { document.getElementById('res_pump_w').textContent = '—'; return; }
-        const k = parseFloat(v);
+        const k = pn(v);
         if (isNaN(k)) {
             document.getElementById('res_pump_w').innerHTML = 'Wartość <i>k</i> musi być liczbą';
             return;
@@ -726,7 +762,7 @@
         }
         const w = (k / 24) * 100;
         document.getElementById('res_pump_w').innerHTML =
-            '<b>w</b> = (' + k.toFixed(2) + ' / 24) \u00D7 100% = <strong>' + w.toFixed(2) + ' %</strong>';
+            '<b>w</b> = (' + fmt(k,2) + ' / 24) \u00D7 100% = <strong>' + fmt(w,2) + ' %</strong>';
     }
 </script>
 </body>
