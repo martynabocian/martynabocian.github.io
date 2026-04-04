@@ -139,7 +139,7 @@
                 iframe.style.display = 'block';
                 // Small delay to ensure authenticated flag is set before iframe loads
                 setTimeout(function() {
-                    iframe.src = 'plot.html';
+                    iframe.src = 'select.html';
                 }, 50);
             } else {
                 errorDiv.textContent = 'Nieprawidłowe hasło';
@@ -156,6 +156,15 @@
         window.addEventListener('message', function(e) {
             if (e.data === 'checkAuth') {
                 e.source.postMessage({authenticated: authenticated}, '*');
+            }
+            // Handle navigation requests from child pages
+            if (e.data && e.data.navigate) {
+                var iframe = document.getElementById('content');
+                document.getElementById('loadingMessage').style.display = 'block';
+                iframe.onload = function() {
+                    document.getElementById('loadingMessage').style.display = 'none';
+                };
+                iframe.src = e.data.navigate;
             }
         });
     </script>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symulacje – nowe warunki</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.4rem 1rem;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-bottom: 1rem;
+        }
+        .back-btn:hover { background: #5a6268; }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        h1 {
+            font-size: 1.4em;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .card h2 {
+            font-size: 1.15em;
+            margin-bottom: 1rem;
+            color: #007bff;
+        }
+        .equation-block {
+            background: #f1f3f5;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.2rem 0;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .input-group label {
+            font-size: 0.9em;
+            color: #555;
+        }
+        .input-group input {
+            padding: 0.5rem 0.7rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+            width: 100%;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+        }
+        .result-box {
+            background: #e7f5ff;
+            border: 1px solid #b6d4fe;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-top: 1rem;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        .result-box.highlight {
+            background: #d1ecf1;
+            border-color: #86cfda;
+            font-size: 1.2em;
+        }
+        .compute-btn {
+            padding: 0.5rem 2rem;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 0.5rem;
+        }
+        .compute-btn:hover { background: #0056b3; }
+        .note {
+            font-size: 0.88em;
+            color: #6c757d;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+        @media (max-width: 600px) {
+            .inputs-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <script>
+        let authVerified = false;
+        if (window.parent !== window) {
+            window.parent.postMessage('checkAuth', '*');
+            window.addEventListener('message', function(e) {
+                if (e.data && e.data.authenticated) authVerified = true;
+            });
+            setTimeout(function() {
+                if (!authVerified) window.location.href = 'index.html';
+            }, 1000);
+        } else {
+            window.location.href = 'index.html';
+        }
+        function goBack() {
+            window.parent.postMessage({ navigate: 'select.html' }, '*');
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <button class="back-btn" onclick="goBack()">&#8592; Powrót</button>
+    <h1>Symulacje &ndash; oblicz dla nowych warunków</h1>
+
+    <!-- Section 1: E_0 — daily transmission heat loss -->
+    <div class="card">
+        <h2>1. Dobowe straty ciepła przez przenikanie — $E_0$</h2>
+        <div class="equation-block">
+            $$E_0 = \frac{U \cdot A \cdot (T_i - T_e) \cdot 24 \cdot 3600}{10^9} \quad [\text{GJ/d}]$$
+        </div>
+        <div class="inputs-grid">
+            <div class="input-group">
+                <label>$U$ — współczynnik przenikania ciepła [W/(m²·K)]</label>
+                <input type="number" id="U" value="0.28" step="0.01">
+            </div>
+            <div class="input-group">
+                <label>$A$ — powierzchnia przegród [m²]</label>
+                <input type="number" id="A" value="245" step="1">
+            </div>
+            <div class="input-group">
+                <label>$T_i$ — temperatura wewnętrzna [°C]</label>
+                <input type="number" id="Ti" value="20" step="0.5">
+            </div>
+            <div class="input-group">
+                <label>$T_e$ — temperatura zewnętrzna [°C]</label>
+                <input type="number" id="Te" value="-4.2" step="0.1">
+            </div>
+        </div>
+        <button class="compute-btn" onclick="computeE0()">Oblicz E₀</button>
+        <div class="result-box" id="resultE0">Wynik pojawi się tutaj</div>
+    </div>
+
+    <!-- Section 2: E_p — passive energy gains -->
+    <div class="card">
+        <h2>2. Pasywne zyski energetyczne — $E_p$</h2>
+        <div class="equation-block">
+            $$E_p = E_{sol} + E_{int} \quad [\text{GJ/d}]$$
+        </div>
+
+        <h3 style="font-size:1em;margin:1rem 0 0.5rem;color:#555;">Zyski słoneczne $E_{sol}$</h3>
+        <div class="equation-block">
+            $$E_{sol} = \frac{\sum_j (A_{ok,j} \cdot g_j \cdot I_j) \cdot t_{sol} \cdot 3600}{10^9} \quad [\text{GJ/d}]$$
+        </div>
+        <div class="inputs-grid">
+            <div class="input-group">
+                <label>$\sum A_{ok} \cdot g \cdot I$ — sumaryczne zyski słoneczne [W]</label>
+                <input type="number" id="solarW" value="1420" step="10">
+            </div>
+            <div class="input-group">
+                <label>$t_{sol}$ — czas nasłonecznienia [h/d]</label>
+                <input type="number" id="tSol" value="8" step="0.5">
+            </div>
+        </div>
+
+        <h3 style="font-size:1em;margin:1rem 0 0.5rem;color:#555;">Zyski wewnętrzne $E_{int}$</h3>
+        <div class="equation-block">
+            $$E_{int} = \frac{q_{int} \cdot A_f \cdot 24 \cdot 3600}{10^9} \quad [\text{GJ/d}]$$
+        </div>
+        <div class="inputs-grid">
+            <div class="input-group">
+                <label>$q_{int}$ — jednostkowe zyski wewnętrzne [W/m²]</label>
+                <input type="number" id="qInt" value="6.0" step="0.5">
+            </div>
+            <div class="input-group">
+                <label>$A_f$ — powierzchnia użytkowa [m²]</label>
+                <input type="number" id="Af" value="135" step="1">
+            </div>
+        </div>
+        <button class="compute-btn" onclick="computeEp()">Oblicz E<sub>p</sub></button>
+        <div class="result-box" id="resultEsol">—</div>
+        <div class="result-box" id="resultEint">—</div>
+        <div class="result-box highlight" id="resultEp" style="margin-top:0.8rem;">Wynik pojawi się tutaj</div>
+    </div>
+
+    <!-- Section 3: E_d = E_0 - E_p -->
+    <div class="card">
+        <h2>3. Dobowe zapotrzebowanie na energię do ogrzewania — $E_d$</h2>
+        <div class="equation-block">
+            $$E_d = E_0 - E_p \quad [\text{GJ/d}]$$
+        </div>
+        <p style="font-size:0.95em;margin-bottom:0.8rem;">Kliknij przycisk aby obliczyć na podstawie wartości z sekcji 1 i 2.</p>
+        <button class="compute-btn" onclick="computeEd()">Oblicz E<sub>d</sub></button>
+        <div class="result-box highlight" id="resultEd">Wynik pojawi się tutaj</div>
+        <p class="note">Jeśli $E_d &lt; 0$, budynek nie wymaga ogrzewania w danych warunkach.</p>
+    </div>
+
+    <!-- Section 4: Seasonal demand -->
+    <div class="card">
+        <h2>4. Sezonowe zapotrzebowanie na ciepło</h2>
+        <div class="equation-block">
+            $$E_{season} = E_d \cdot n_{heating} \quad [\text{GJ}]$$
+        </div>
+        <div class="inputs-grid">
+            <div class="input-group">
+                <label>$n_{heating}$ — długość sezonu grzewczego [d]</label>
+                <input type="number" id="nHeat" value="200" step="1">
+            </div>
+        </div>
+        <button class="compute-btn" onclick="computeSeason()">Oblicz E<sub>season</sub></button>
+        <div class="result-box highlight" id="resultSeason">Wynik pojawi się tutaj</div>
+    </div>
+</div>
+
+<script>
+    let lastE0 = null, lastEp = null, lastEd = null;
+
+    function computeE0() {
+        const U  = parseFloat(document.getElementById('U').value);
+        const A  = parseFloat(document.getElementById('A').value);
+        const Ti = parseFloat(document.getElementById('Ti').value);
+        const Te = parseFloat(document.getElementById('Te').value);
+        lastE0 = U * A * (Ti - Te) * 24 * 3600 / 1e9;
+        document.getElementById('resultE0').innerHTML =
+            '<b>E<sub>0</sub></b> = ' + lastE0.toFixed(4) + ' GJ/d';
+    }
+
+    function computeEp() {
+        const solarW = parseFloat(document.getElementById('solarW').value);
+        const tSol   = parseFloat(document.getElementById('tSol').value);
+        const qInt   = parseFloat(document.getElementById('qInt').value);
+        const Af     = parseFloat(document.getElementById('Af').value);
+
+        const Esol = solarW * tSol * 3600 / 1e9;
+        const Eint = qInt * Af * 24 * 3600 / 1e9;
+        lastEp = Esol + Eint;
+
+        document.getElementById('resultEsol').innerHTML =
+            '<b>E<sub>sol</sub></b> = ' + Esol.toFixed(4) + ' GJ/d';
+        document.getElementById('resultEint').innerHTML =
+            '<b>E<sub>int</sub></b> = ' + Eint.toFixed(4) + ' GJ/d';
+        document.getElementById('resultEp').innerHTML =
+            '<b>E<sub>p</sub></b> = ' + Esol.toFixed(4) + ' + ' + Eint.toFixed(4) + ' = <strong>' + lastEp.toFixed(4) + ' GJ/d</strong>';
+    }
+
+    function computeEd() {
+        if (lastE0 === null) computeE0();
+        if (lastEp === null) computeEp();
+        lastEd = lastE0 - lastEp;
+        let html = '<b>E<sub>d</sub></b> = ' + lastE0.toFixed(4) + ' − ' + lastEp.toFixed(4) + ' = <strong>' + lastEd.toFixed(4) + ' GJ/d</strong>';
+        if (lastEd < 0) {
+            html += '&ensp;<span style="color:#28a745;">(budynek nie wymaga ogrzewania)</span>';
+        }
+        document.getElementById('resultEd').innerHTML = html;
+    }
+
+    function computeSeason() {
+        if (lastEd === null) computeEd();
+        const n = parseFloat(document.getElementById('nHeat').value);
+        const Eseason = lastEd * n;
+        const kWh = Eseason * 1e9 / 3.6e6;
+        document.getElementById('resultSeason').innerHTML =
+            '<b>E<sub>season</sub></b> = ' + Eseason.toFixed(2) + ' GJ &nbsp;\u2248&nbsp; ' + kWh.toFixed(0) + ' kWh';
+    }
+</script>
+</body>
+</html>
