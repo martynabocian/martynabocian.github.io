@@ -282,14 +282,23 @@
         </div>
         <div class="result-box" id="res_Tsr">&mdash;</div>
 
+        <!-- T_sr' (Kelvin) -->
+        <h3>Temperatura średnia w Kelvinach $T'_{\text{śr}}$</h3>
+        <div class="equation-block">
+            $$T'_{\text{śr}} = T_{\text{śr}} + 273{,}15 \quad [\text{K}]$$
+        </div>
+        <div class="result-box" id="res_TsrK">&mdash;</div>
+
         <!-- rho_w -->
-        <h3>Gęstość wody $\rho_w(T_{\text{śr}})$</h3>
-        <p class="note">Wartość interpolowana z tablicy właściwości wody (zakres 0–100 °C, dokładność 0,01 °C).</p>
+        <h3>Gęstość wody $\rho_w(T'_{\text{śr}})$</h3>
+        <div class="equation-block">
+            $$\rho_w = 1000 - \frac{0{,}00198582 \cdot (T'_{\text{śr}} + 10) \cdot (T'_{\text{śr}} - 277)^2}{T'_{\text{śr}} - 205{,}8} \quad [\text{kg/m}^3]$$
+        </div>
         <div class="result-box" id="res_rho">&mdash;</div>
 
         <!-- c_w -->
         <h3>Ciepło właściwe wody $c_w(T_{\text{śr}})$</h3>
-        <p class="note">Wartość interpolowana z tablicy właściwości wody.</p>
+        <p class="note">Wartość interpolowana z tablicy właściwości wody (zakres 0–100 °C, dokładność 0,01 °C).</p>
         <div class="result-box" id="res_cw">&mdash;</div>
 
         <!-- Q_cwu -->
@@ -306,7 +315,7 @@
         </div>
         <div class="inputs-row" style="max-width:400px;">
             <div class="input-group">
-                <label>$t_1$ &mdash; temp. wody podgrzanej [°C]</label>
+                <label style="white-space:nowrap;">$t_1$ &mdash; temp. wody podgrzanej [°C]</label>
                 <input type="number" id="hw_t1" step="0.01" placeholder="np. 55">
             </div>
             <div class="input-group">
@@ -333,7 +342,7 @@
                 <input type="number" id="cop_Qg" step="0.01" placeholder="np. 10">
             </div>
             <div class="input-group">
-                <label>$E_{el}$ &mdash; pobór energii elektrycznej [kWh]</label>
+                <label style="white-space:nowrap;">$E_{el}$ &mdash; pobór energii elektrycznej [kWh]</label>
                 <input type="number" id="cop_Eel" step="0.01" placeholder="np. 2.5">
             </div>
         </div>
@@ -346,7 +355,7 @@
 
     <div class="card-wide">
         <h2>Wartość procentowa pracy pompy ciepła</h2>
-        <p style="margin:0 0 6px; color:#555;">Podaj liczbę godzin $k$ w dobie, gdy $\dot{V} > 0{,}01\;\text{m}^3/\text{s}$</p>
+        <p style="margin:0 0 6px; color:#555;">Podaj liczbę godzin $k$ w dobie, gdy $\dot{V} > 0$</p>
         <div class="equation-block">
             $$w = \frac{k}{24} \cdot 100\%$$
         </div>
@@ -442,21 +451,21 @@
         document.getElementById('res_Tsr').innerHTML =
             '<b>T<sub>śr</sub></b> = (' + T1.toFixed(2) + ' + ' + T2.toFixed(2) + ') / 2 = <strong>' + lastTsr.toFixed(2) + ' °C</strong>';
 
-        if (lastTsr < 0 || lastTsr > 100) {
-            document.getElementById('res_rho').innerHTML = 'T<sub>śr</sub> poza zakresem tablicy (0–100 °C)';
-            document.getElementById('res_cw').innerHTML = 'T<sub>śr</sub> poza zakresem tablicy (0–100 °C)';
-            document.getElementById('res_Qcwu').textContent = '\u2014';
-            return;
-        }
+        // T_sr' (Kelvin)
+        const TsrK = lastTsr + 273.15;
+        document.getElementById('res_TsrK').innerHTML =
+            '<b>T\u2032<sub>śr</sub></b> = ' + lastTsr.toFixed(2) + ' + 273,15 = <strong>' + TsrK.toFixed(2) + ' K</strong>';
 
-        // rho
-        if (!waterData) {
-            document.getElementById('res_rho').textContent = 'Ładowanie tablicy...';
+        // rho (formula using Kelvin)
+        lastRho = 1000 - (0.00198582 * (TsrK + 10) * Math.pow(TsrK - 277, 2)) / (TsrK - 205.8);
+        document.getElementById('res_rho').innerHTML =
+            '<b>\u03C1<sub>w</sub>(' + TsrK.toFixed(2) + ' K)</b> = <strong>' + lastRho.toFixed(2) + ' kg/m\u00B3</strong>';
+
+        if (lastTsr < 0 || lastTsr > 100) {
+            document.getElementById('res_cw').innerHTML = 'T<sub>śr</sub> poza zakresem tablicy (0–100 °C)';
+            document.getElementById('res_Qcwu').textContent = '—';
             return;
         }
-        lastRho = interpolateCol(lastTsr, 1);
-        document.getElementById('res_rho').innerHTML =
-            '<b>\u03C1<sub>w</sub>(' + lastTsr.toFixed(2) + ' °C)</b> = <strong>' + lastRho.toFixed(2) + ' kg/m\u00B3</strong>';
 
         // c_w (CSV has cp in kJ/(kg·K), convert to J/(kg·K) for Q formula)
         lastCw = interpolateCol(lastTsr, 2); // kJ/(kg·K)
