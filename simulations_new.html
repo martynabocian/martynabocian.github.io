@@ -199,14 +199,14 @@
         <div class="card">
             <h2>Dobowe zużycie ciepła</h2>
             <div class="equation-block">
-                $$E_d = E_0 - E_p \quad [\text{GJ/d}]$$
+                $$E_d = E_o - E_p \quad [\text{GJ/d}]$$
             </div>
             <div class="input-group">
-                <label>$E_0$ &mdash; całkowite zapotrzebowanie na ciepło [GJ/d]</label>
+                <label>$E_o$ &mdash; zużycie ciepła końcowe dla danego dnia [GJ/d]</label>
                 <input type="number" id="d_E0" step="0.0001" placeholder="np. 0.1437">
             </div>
             <div class="input-group">
-                <label>$E_p$ &mdash; zyski pasywne (odzysk ciepła) [GJ/d]</label>
+                <label>$E_p$ &mdash; zużycie ciepła początkowe dla danego dnia [GJ/d]</label>
                 <input type="number" id="d_Ep" step="0.0001" placeholder="np. 0.1109">
             </div>
             <div class="spacer"></div>
@@ -221,11 +221,11 @@
                 $$E_m = E_k - E_n \quad [\text{GJ/miesiąc}]$$
             </div>
             <div class="input-group">
-                <label>$E_k$ &mdash; całkowite zapotrzebowanie na ciepło [GJ/miesiąc]</label>
+                <label>$E_k$ &mdash; zużycie ciepła końcowe dla danego miesiąca [GJ/miesiąc]</label>
                 <input type="number" id="m_Ek" step="0.001" placeholder="np. 4.311">
             </div>
             <div class="input-group">
-                <label>$E_n$ &mdash; zyski pasywne (odzysk ciepła) [GJ/miesiąc]</label>
+                <label>$E_n$ &mdash; zużycie ciepła początkowe dla danego miesiąca [GJ/miesiąc]</label>
                 <input type="number" id="m_En" step="0.001" placeholder="np. 3.327">
             </div>
             <div class="spacer"></div>
@@ -237,14 +237,14 @@
         <div class="card">
             <h2>Sezonowe zużycie ciepła</h2>
             <div class="equation-block">
-                $$E_s = E_r - E_o \quad [\text{GJ/sezon}]$$
+                $$E_s = E_r - E_t \quad [\text{GJ/sezon}]$$
             </div>
             <div class="input-group">
-                <label>$E_r$ &mdash; całkowite zapotrzebowanie na ciepło [GJ/sezon]</label>
+                <label>$E_r$ &mdash; zużycie ciepła końcowe dla danego sezonu [GJ/sezon]</label>
                 <input type="number" id="s_Er" step="0.01" placeholder="np. 28.74">
             </div>
             <div class="input-group">
-                <label>$E_o$ &mdash; zyski pasywne (odzysk ciepła) [GJ/sezon]</label>
+                <label>$E_t$ &mdash; zużycie ciepła początkowe dla danego sezonu [GJ/sezon]</label>
                 <input type="number" id="s_Eo" step="0.01" placeholder="np. 22.18">
             </div>
             <div class="spacer"></div>
@@ -315,12 +315,12 @@
         </div>
         <div class="inputs-row" style="max-width:400px;">
             <div class="input-group">
-                <label style="white-space:nowrap;">$t_1$ &mdash; temp. wody podgrzanej [°C]</label>
-                <input type="number" id="hw_t1" step="0.01" placeholder="np. 55">
+                <label style="white-space:nowrap;">$t_1$ &mdash; temperatura na wyjściu z wymiennika [°C]</label>
+                <input type="number" id="hw_t1" step="0.01" min="0" max="100" placeholder="np. 55">
             </div>
             <div class="input-group">
-                <label>$t_2$ &mdash; temp. wody zimnej [°C]</label>
-                <input type="number" id="hw_t2" step="0.01" placeholder="np. 10">
+                <label style="white-space:nowrap;">$t_2$ &mdash; temperatura na wejściu do wymiennika [°C]</label>
+                <input type="number" id="hw_t2" step="0.01" min="0" max="100" placeholder="np. 10">
             </div>
         </div>
         <button class="compute-btn" onclick="calcMu()">Oblicz &mu;<sub>cwu</sub></button>
@@ -409,12 +409,12 @@
 
     // ===== Row 1 =====
     function calc_d() {
-        const E0 = parseFloat(document.getElementById('d_E0').value);
+        const Eo = parseFloat(document.getElementById('d_E0').value);
         const Ep = parseFloat(document.getElementById('d_Ep').value);
-        if (isNaN(E0) || isNaN(Ep)) { document.getElementById('res_d').textContent = 'Uzupełnij dane'; return; }
-        const Ed = E0 - Ep;
+        if (isNaN(Eo) || isNaN(Ep)) { document.getElementById('res_d').textContent = 'Uzupełnij dane'; return; }
+        const Ed = Eo - Ep;
         document.getElementById('res_d').innerHTML =
-            '<b>E<sub>d</sub></b> = ' + E0.toFixed(4) + ' \u2212 ' + Ep.toFixed(4) + ' = <strong>' + Ed.toFixed(4) + ' GJ/d</strong>';
+            '<b>E<sub>d</sub></b> = ' + Eo.toFixed(4) + ' \u2212 ' + Ep.toFixed(4) + ' = <strong>' + Ed.toFixed(4) + ' GJ/d</strong>';
     }
     function calc_m() {
         const Ek = parseFloat(document.getElementById('m_Ek').value);
@@ -426,11 +426,11 @@
     }
     function calc_s() {
         const Er = parseFloat(document.getElementById('s_Er').value);
-        const Eo = parseFloat(document.getElementById('s_Eo').value);
-        if (isNaN(Er) || isNaN(Eo)) { document.getElementById('res_s').textContent = 'Uzupełnij dane'; return; }
-        const Es = Er - Eo;
+        const Et = parseFloat(document.getElementById('s_Eo').value);
+        if (isNaN(Er) || isNaN(Et)) { document.getElementById('res_s').textContent = 'Uzupełnij dane'; return; }
+        const Es = Er - Et;
         document.getElementById('res_s').innerHTML =
-            '<b>E<sub>s</sub></b> = ' + Er.toFixed(2) + ' \u2212 ' + Eo.toFixed(2) + ' = <strong>' + Es.toFixed(2) + ' GJ/sezon</strong>';
+            '<b>E<sub>s</sub></b> = ' + Er.toFixed(2) + ' \u2212 ' + Et.toFixed(2) + ' = <strong>' + Es.toFixed(2) + ' GJ/sezon</strong>';
     }
 
     // ===== Row 2 =====
@@ -443,6 +443,24 @@
 
         if (isNaN(T1) || isNaN(T2)) {
             var msg = 'Wprowadź <i>T</i><sub>1</sub> i <i>T</i><sub>2</sub>';
+            document.getElementById('res_Tsr').innerHTML = msg;
+            document.getElementById('res_TsrK').innerHTML = msg;
+            document.getElementById('res_rho').innerHTML = msg;
+            document.getElementById('res_cw').innerHTML = msg;
+            document.getElementById('res_Qcwu').innerHTML = msg;
+            return;
+        }
+        if (T1 < 0 || T1 > 100 || T2 < 0 || T2 > 100) {
+            var msg = '<i>T</i><sub>1</sub> i <i>T</i><sub>2</sub> muszą być w zakresie 0–100 °C';
+            document.getElementById('res_Tsr').innerHTML = msg;
+            document.getElementById('res_TsrK').innerHTML = msg;
+            document.getElementById('res_rho').innerHTML = msg;
+            document.getElementById('res_cw').innerHTML = msg;
+            document.getElementById('res_Qcwu').innerHTML = msg;
+            return;
+        }
+        if (T1 <= T2) {
+            var msg = '<i>T</i><sub>1</sub> musi być większe od <i>T</i><sub>2</sub>';
             document.getElementById('res_Tsr').innerHTML = msg;
             document.getElementById('res_TsrK').innerHTML = msg;
             document.getElementById('res_rho').innerHTML = msg;
@@ -498,8 +516,16 @@
             document.getElementById('res_mu').innerHTML = 'Uzupełnij <i>T</i><sub>1</sub>, <i>T</i><sub>2</sub>, <i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>';
             return;
         }
+        if (t1 < 0 || t1 > 100 || t2 < 0 || t2 > 100) {
+            document.getElementById('res_mu').innerHTML = '<i>t</i><sub>1</sub> i <i>t</i><sub>2</sub> muszą być w zakresie 0–100 °C';
+            return;
+        }
+        if (t1 <= t2) {
+            document.getElementById('res_mu').innerHTML = '<i>t</i><sub>1</sub> musi być większe od <i>t</i><sub>2</sub>';
+            return;
+        }
         const dT = T1 - T2;
-        if (dT === 0) {
+        if (dT <= 0) {
             document.getElementById('res_mu').innerHTML = '<i>T</i><sub>1</sub> − <i>T</i><sub>2</sub> nie może być zerem';
             return;
         }
