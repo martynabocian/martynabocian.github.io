@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Symulacje – studium przypadku</title>
+    <title>Obliczenia – studium przypadku</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
@@ -32,79 +32,48 @@
         }
         .back-btn:hover { background: #5a6268; }
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 1rem;
         }
         h1 {
             font-size: 1.4em;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
             color: #333;
+        }
+        .row-label {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: #333;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #dee2e6;
         }
         .card {
             background: white;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
+            padding: 1.5rem;
         }
         .card h2 {
-            font-size: 1.15em;
-            margin-bottom: 1rem;
+            font-size: 1em;
+            margin-bottom: 0.8rem;
             color: #007bff;
         }
         .equation-block {
             background: #f1f3f5;
             border-radius: 8px;
-            padding: 1.2rem;
-            margin: 1rem 0;
+            padding: 1rem;
+            margin: 0.8rem 0;
             text-align: center;
-            font-size: 1.1em;
+            font-size: 1em;
         }
-        .params-table {
+        .plot-frame {
             width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-        .params-table th, .params-table td {
-            text-align: left;
-            padding: 0.5rem 0.8rem;
-            border-bottom: 1px solid #e9ecef;
-            font-size: 0.95em;
-        }
-        .params-table th {
-            color: #555;
-            font-weight: 600;
-            background: #f8f9fa;
-        }
-        .params-table td:last-child {
-            text-align: right;
-            font-weight: 600;
-            color: #212529;
-        }
-        .result-box {
-            background: #e7f5ff;
-            border: 1px solid #b6d4fe;
+            border: 1px solid #dee2e6;
             border-radius: 8px;
-            padding: 1rem 1.5rem;
             margin-top: 1rem;
-            font-size: 1.1em;
-            text-align: center;
-            font-weight: 600;
-        }
-        .result-box.highlight {
-            background: #d1ecf1;
-            border-color: #86cfda;
-            font-size: 1.2em;
-        }
-        .note {
-            font-size: 0.88em;
-            color: #6c757d;
-            margin-top: 0.5rem;
-            font-style: italic;
-        }
-        @media (max-width: 600px) {
-            .params-table th, .params-table td { padding: 0.4rem 0.5rem; font-size: 0.88em; }
+            min-height: 500px;
         }
     </style>
     <script>
@@ -128,96 +97,36 @@
 <body>
 <div class="container">
     <button class="back-btn" onclick="goBack()">&#8592; Powrót</button>
-    <h1>Symulacje wykonane dla budynku &ndash; studium przypadku</h1>
+    <h1>Obliczenia wykonane dla budynku &ndash; studium przypadku</h1>
 
-    <!-- Section 1: Base daily heat loss E_0 -->
+    <div class="row-label">1. Obliczenie zużycia ciepła potrzebnego do podgrzewu ciepłej wody</div>
+
     <div class="card">
-        <h2>1. Dobowe straty ciepła przez przenikanie — $E_0$</h2>
-        <div class="equation-block">
-            $$E_0 = \frac{U \cdot A \cdot (T_i - T_e) \cdot 24 \cdot 3600}{10^9} \quad [\text{GJ/d}]$$
-        </div>
-        <table class="params-table">
-            <tr><th>Parametr</th><th>Wartość</th></tr>
-            <tr><td>$U$ — współczynnik przenikania ciepła</td><td>0.28 W/(m²·K)</td></tr>
-            <tr><td>$A$ — powierzchnia przegród budynku</td><td>245 m²</td></tr>
-            <tr><td>$T_i$ — temperatura wewnętrzna</td><td>20 °C</td></tr>
-            <tr><td>$T_e$ — temperatura zewnętrzna (obliczeniowa)</td><td>−4.2 °C</td></tr>
-        </table>
-        <div class="result-box">
-            $E_0$ = 0.28 × 245 × (20 − (−4.2)) × 86 400 / 10⁹ = <strong>0.1437 GJ/d</strong>
-        </div>
-    </div>
-
-    <!-- Section 2: Passive energy gains E_p -->
-    <div class="card">
-        <h2>2. Pasywne zyski energetyczne — $E_p$</h2>
-        <div class="equation-block">
-            $$E_p = E_{sol} + E_{int} \quad [\text{GJ/d}]$$
-        </div>
-
-        <h3 style="font-size:1em;margin:1rem 0 0.5rem;color:#555;">Zyski słoneczne $E_{sol}$</h3>
-        <div class="equation-block">
-            $$E_{sol} = \frac{\sum_j (A_{ok,j} \cdot g_j \cdot I_j) \cdot 3600}{10^9} \quad [\text{GJ/d}]$$
-        </div>
-        <table class="params-table">
-            <tr><th>Parametr</th><th>Wartość</th></tr>
-            <tr><td>$\sum A_{ok} \cdot g \cdot I$ — sumaryczne zyski słoneczne</td><td>1 420 W</td></tr>
-        </table>
-        <div class="result-box">
-            $E_{sol}$ = 1 420 × 3 600 × 8 / 10⁹ ≈ <strong>0.0409 GJ/d</strong>
-        </div>
-        <p class="note">Przyjęto 8 h efektywnego nasłonecznienia w dniu obliczeniowym.</p>
-
-        <h3 style="font-size:1em;margin:1rem 0 0.5rem;color:#555;">Zyski wewnętrzne $E_{int}$</h3>
-        <div class="equation-block">
-            $$E_{int} = \frac{q_{int} \cdot A_f \cdot 24 \cdot 3600}{10^9} \quad [\text{GJ/d}]$$
-        </div>
-        <table class="params-table">
-            <tr><th>Parametr</th><th>Wartość</th></tr>
-            <tr><td>$q_{int}$ — jednostkowe zyski wewnętrzne</td><td>6.0 W/m²</td></tr>
-            <tr><td>$A_f$ — powierzchnia użytkowa</td><td>135 m²</td></tr>
-        </table>
-        <div class="result-box">
-            $E_{int}$ = 6.0 × 135 × 86 400 / 10⁹ = <strong>0.0700 GJ/d</strong>
-        </div>
-
-        <div class="result-box highlight" style="margin-top:1.5rem;">
-            $E_p = E_{sol} + E_{int}$ = 0.0409 + 0.0700 = <strong>0.1109 GJ/d</strong>
-        </div>
-    </div>
-
-    <!-- Section 3: Net daily heating demand E_d -->
-    <div class="card">
-        <h2>3. Dobowe zapotrzebowanie na energię do ogrzewania — $E_d$</h2>
+        <h2>Dobowe zużycie ciepła</h2>
         <div class="equation-block">
             $$E_d = E_0 - E_p \quad [\text{GJ/d}]$$
         </div>
-        <table class="params-table">
-            <tr><th>Składnik</th><th>Wartość [GJ/d]</th></tr>
-            <tr><td>$E_0$ — straty ciepła przez przenikanie</td><td>0.1437</td></tr>
-            <tr><td>$E_p$ — pasywne zyski energetyczne</td><td>0.1109</td></tr>
-        </table>
-        <div class="result-box highlight">
-            $E_d$ = 0.1437 − 0.1109 = <strong>0.0328 GJ/d</strong>
-        </div>
-        <p class="note">Wartość dodatnia oznacza konieczność dostarczenia energii z systemu grzewczego.</p>
+        <iframe class="plot-frame" src="dobowe_zuzycie_ciepla.html" frameborder="0"></iframe>
     </div>
 
-    <!-- Section 4: Seasonal summary -->
+    <div class="row-label">2. Miesięczne zużycie ciepła</div>
+
     <div class="card">
-        <h2>4. Sezonowe zapotrzebowanie na ciepło</h2>
+        <h2>Miesięczne zużycie ciepła</h2>
         <div class="equation-block">
-            $$E_{season} = E_d \cdot n_{heating} \quad [\text{GJ}]$$
+            $$E_m = E_k - E_n \quad [\text{GJ/miesiąc}]$$
         </div>
-        <table class="params-table">
-            <tr><th>Parametr</th><th>Wartość</th></tr>
-            <tr><td>$E_d$ — dobowe zapotrzebowanie</td><td>0.0328 GJ/d</td></tr>
-            <tr><td>$n_{heating}$ — długość sezonu grzewczego</td><td>200 d</td></tr>
-        </table>
-        <div class="result-box highlight">
-            $E_{season}$ = 0.0328 × 200 = <strong>6.56 GJ</strong> &nbsp;≈&nbsp; <strong>1 822 kWh</strong>
+        <iframe class="plot-frame" src="miesieczne_zuzycie_ciepla.html" frameborder="0"></iframe>
+    </div>
+
+    <div class="row-label">3. Sezonowe zużycie ciepła</div>
+
+    <div class="card">
+        <h2>Sezonowe zużycie ciepła</h2>
+        <div class="equation-block">
+            $$E_s = E_r - E_o \quad [\text{GJ/sezon}]$$
         </div>
-        <p class="note">Wartość orientacyjna dla analizowanego budynku jednorodzinnego w sezonie grzewczym.</p>
+        <iframe class="plot-frame" src="sezon_es.html" frameborder="0"></iframe>
     </div>
 </div>
 </body>

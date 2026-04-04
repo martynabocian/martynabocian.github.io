@@ -32,55 +32,89 @@
         }
         .back-btn:hover { background: #5a6268; }
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 1rem;
         }
         h1 {
             font-size: 1.4em;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.5rem;
             color: #333;
         }
+        .row-label {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: #333;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+        .cards-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.2rem;
+            margin-bottom: 1rem;
+        }
         .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-wide {
             background: white;
             border-radius: 10px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             padding: 2rem;
             margin-bottom: 1.5rem;
         }
-        .card h2 {
-            font-size: 1.15em;
-            margin-bottom: 1rem;
+        .card h2, .card-wide h2 {
+            font-size: 1em;
+            margin-bottom: 0.8rem;
             color: #007bff;
+        }
+        .card-wide h3 {
+            font-size: 0.95em;
+            color: #555;
+            margin: 1.2rem 0 0.5rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #eee;
+        }
+        .card-wide h3:first-of-type {
+            border-top: none;
+            padding-top: 0;
         }
         .equation-block {
             background: #f1f3f5;
             border-radius: 8px;
-            padding: 1.2rem;
-            margin: 1rem 0;
+            padding: 1rem;
+            margin: 0.8rem 0;
             text-align: center;
-            font-size: 1.1em;
+            font-size: 1em;
         }
-        .inputs-grid {
+        .inputs-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1rem;
-            margin: 1.2rem 0;
+            margin: 0.8rem 0;
         }
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: 0.3rem;
+            gap: 0.2rem;
+            margin-bottom: 0.7rem;
         }
         .input-group label {
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: #555;
         }
         .input-group input {
-            padding: 0.5rem 0.7rem;
+            padding: 0.45rem 0.6rem;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 1em;
+            font-size: 0.95em;
             width: 100%;
         }
         .input-group input:focus {
@@ -92,35 +126,46 @@
             background: #e7f5ff;
             border: 1px solid #b6d4fe;
             border-radius: 8px;
-            padding: 1rem 1.5rem;
-            margin-top: 1rem;
-            font-size: 1.1em;
+            padding: 0.8rem 1rem;
+            margin-top: 0.5rem;
+            font-size: 1em;
             text-align: center;
+            font-weight: 600;
         }
-        .result-box.highlight {
-            background: #d1ecf1;
-            border-color: #86cfda;
-            font-size: 1.2em;
+        .card .spacer {
+            flex: 1;
         }
         .compute-btn {
-            padding: 0.5rem 2rem;
+            padding: 0.45rem 1.5rem;
             background: #007bff;
             color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 1em;
-            margin-top: 0.5rem;
+            font-size: 0.95em;
+            margin: 0.5rem 0;
+            align-self: flex-start;
         }
         .compute-btn:hover { background: #0056b3; }
         .note {
-            font-size: 0.88em;
+            font-size: 0.82em;
             color: #6c757d;
-            margin-top: 0.5rem;
+            margin-top: 0.4rem;
             font-style: italic;
         }
-        @media (max-width: 600px) {
-            .inputs-grid { grid-template-columns: 1fr; }
+        .lookup-display {
+            display: inline-block;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.95em;
+            color: #333;
+            margin: 0.3rem 0;
+            font-weight: 600;
+        }
+        @media (max-width: 900px) {
+            .cards-row { grid-template-columns: 1fr; }
         }
     </style>
     <script>
@@ -146,154 +191,341 @@
     <button class="back-btn" onclick="goBack()">&#8592; Powrót</button>
     <h1>Symulacje &ndash; oblicz dla nowych warunków</h1>
 
-    <!-- Section 1: E_0 — daily transmission heat loss -->
-    <div class="card">
-        <h2>1. Dobowe straty ciepła przez przenikanie — $E_0$</h2>
-        <div class="equation-block">
-            $$E_0 = \frac{U \cdot A \cdot (T_i - T_e) \cdot 24 \cdot 3600}{10^9} \quad [\text{GJ/d}]$$
+    <!-- =============== ROW 1 =============== -->
+    <div class="row-label">1. Obliczenie zużycia ciepła potrzebnego do podgrzewu ciepłej wody</div>
+
+    <div class="cards-row" style="grid-template-columns: 1fr;">
+        <!-- Daily -->
+        <div class="card">
+            <h2>Dobowe zużycie ciepła</h2>
+            <div class="equation-block">
+                $$E_d = E_0 - E_p \quad [\text{GJ/d}]$$
+            </div>
+            <div class="input-group">
+                <label>$E_0$ &mdash; całkowite zapotrzebowanie na ciepło [GJ/d]</label>
+                <input type="number" id="d_E0" step="0.0001" placeholder="np. 0.1437">
+            </div>
+            <div class="input-group">
+                <label>$E_p$ &mdash; zyski pasywne (odzysk ciepła) [GJ/d]</label>
+                <input type="number" id="d_Ep" step="0.0001" placeholder="np. 0.1109">
+            </div>
+            <div class="spacer"></div>
+            <button class="compute-btn" onclick="calc_d()">Oblicz E<sub>d</sub></button>
+            <div class="result-box" id="res_d">&mdash;</div>
         </div>
-        <div class="inputs-grid">
-            <div class="input-group">
-                <label>$U$ — współczynnik przenikania ciepła [W/(m²·K)]</label>
-                <input type="number" id="U" value="0.28" step="0.01">
+
+        <!-- Monthly -->
+        <div class="card">
+            <h2>Miesięczne zużycie ciepła</h2>
+            <div class="equation-block">
+                $$E_m = E_k - E_n \quad [\text{GJ/miesiąc}]$$
             </div>
             <div class="input-group">
-                <label>$A$ — powierzchnia przegród [m²]</label>
-                <input type="number" id="A" value="245" step="1">
+                <label>$E_k$ &mdash; całkowite zapotrzebowanie na ciepło [GJ/miesiąc]</label>
+                <input type="number" id="m_Ek" step="0.001" placeholder="np. 4.311">
             </div>
             <div class="input-group">
-                <label>$T_i$ — temperatura wewnętrzna [°C]</label>
-                <input type="number" id="Ti" value="20" step="0.5">
+                <label>$E_n$ &mdash; zyski pasywne (odzysk ciepła) [GJ/miesiąc]</label>
+                <input type="number" id="m_En" step="0.001" placeholder="np. 3.327">
             </div>
-            <div class="input-group">
-                <label>$T_e$ — temperatura zewnętrzna [°C]</label>
-                <input type="number" id="Te" value="-4.2" step="0.1">
-            </div>
+            <div class="spacer"></div>
+            <button class="compute-btn" onclick="calc_m()">Oblicz E<sub>m</sub></button>
+            <div class="result-box" id="res_m">&mdash;</div>
         </div>
-        <button class="compute-btn" onclick="computeE0()">Oblicz E₀</button>
-        <div class="result-box" id="resultE0">Wynik pojawi się tutaj</div>
+
+        <!-- Seasonal -->
+        <div class="card">
+            <h2>Sezonowe zużycie ciepła</h2>
+            <div class="equation-block">
+                $$E_s = E_r - E_o \quad [\text{GJ/sezon}]$$
+            </div>
+            <div class="input-group">
+                <label>$E_r$ &mdash; całkowite zapotrzebowanie na ciepło [GJ/sezon]</label>
+                <input type="number" id="s_Er" step="0.01" placeholder="np. 28.74">
+            </div>
+            <div class="input-group">
+                <label>$E_o$ &mdash; zyski pasywne (odzysk ciepła) [GJ/sezon]</label>
+                <input type="number" id="s_Eo" step="0.01" placeholder="np. 22.18">
+            </div>
+            <div class="spacer"></div>
+            <button class="compute-btn" onclick="calc_s()">Oblicz E<sub>s</sub></button>
+            <div class="result-box" id="res_s">&mdash;</div>
+        </div>
     </div>
 
-    <!-- Section 2: E_p — passive energy gains -->
-    <div class="card">
-        <h2>2. Pasywne zyski energetyczne — $E_p$</h2>
-        <div class="equation-block">
-            $$E_p = E_{sol} + E_{int} \quad [\text{GJ/d}]$$
-        </div>
+    <!-- =============== ROW 2 =============== -->
+    <div class="row-label">2. Obliczenie mocy wymiennika</div>
 
-        <h3 style="font-size:1em;margin:1rem 0 0.5rem;color:#555;">Zyski słoneczne $E_{sol}$</h3>
-        <div class="equation-block">
-            $$E_{sol} = \frac{\sum_j (A_{ok,j} \cdot g_j \cdot I_j) \cdot t_{sol} \cdot 3600}{10^9} \quad [\text{GJ/d}]$$
-        </div>
-        <div class="inputs-grid">
+    <div class="card-wide">
+        <!-- Shared inputs -->
+        <h2>Parametry czynnika po stronie sieciowej</h2>
+        <div class="inputs-row">
             <div class="input-group">
-                <label>$\sum A_{ok} \cdot g \cdot I$ — sumaryczne zyski słoneczne [W]</label>
-                <input type="number" id="solarW" value="1420" step="10">
+                <label>$T_1$ &mdash; temperatura zasilania [°C]</label>
+                <input type="number" id="hw_T1" step="0.01" min="0" max="100" placeholder="np. 70">
             </div>
             <div class="input-group">
-                <label>$t_{sol}$ — czas nasłonecznienia [h/d]</label>
-                <input type="number" id="tSol" value="8" step="0.5">
+                <label>$T_2$ &mdash; temperatura powrotu [°C]</label>
+                <input type="number" id="hw_T2" step="0.01" min="0" max="100" placeholder="np. 40">
+            </div>
+            <div class="input-group">
+                <label>$\dot{V}$ &mdash; przepływ objętościowy [L/h]</label>
+                <input type="number" id="hw_Vdot" step="0.1" placeholder="np. 500">
             </div>
         </div>
+        <button class="compute-btn" onclick="calcPanel2()">Oblicz wszystko</button>
 
-        <h3 style="font-size:1em;margin:1rem 0 0.5rem;color:#555;">Zyski wewnętrzne $E_{int}$</h3>
+        <!-- T_sr -->
+        <h3>Temperatura średnia czynnika $T_{\text{śr}}$</h3>
         <div class="equation-block">
-            $$E_{int} = \frac{q_{int} \cdot A_f \cdot 24 \cdot 3600}{10^9} \quad [\text{GJ/d}]$$
+            $$T_{\text{śr}} = \frac{T_1 + T_2}{2} \quad [°\text{C}]$$
         </div>
-        <div class="inputs-grid">
+        <div class="result-box" id="res_Tsr">&mdash;</div>
+
+        <!-- rho_w -->
+        <h3>Gęstość wody $\rho_w(T_{\text{śr}})$</h3>
+        <p class="note">Wartość interpolowana z tablicy właściwości wody (zakres 0–100 °C, dokładność 0,01 °C).</p>
+        <div class="result-box" id="res_rho">&mdash;</div>
+
+        <!-- c_w -->
+        <h3>Ciepło właściwe wody $c_w(T_{\text{śr}})$</h3>
+        <p class="note">Wartość interpolowana z tablicy właściwości wody.</p>
+        <div class="result-box" id="res_cw">&mdash;</div>
+
+        <!-- Q_cwu -->
+        <h3>Moc wymiennika $Q_{\text{cwu śr}}$</h3>
+        <div class="equation-block">
+            $$Q_{\text{cwu śr}} = \frac{\dot{V} \cdot \rho_w(T_{\text{śr}}) \cdot c_w(T_{\text{śr}}) \cdot (T_1 - T_2)}{3600 \cdot 1000} \quad [\text{kW}]$$
+        </div>
+        <div class="result-box" id="res_Qcwu">&mdash;</div>
+
+        <!-- mu_cwu -->
+        <h3>Sprawność wymiennika $\mu_{\text{cwu}}$</h3>
+        <div class="equation-block">
+            $$\mu_{\text{cwu}} = \frac{t_1 - t_2}{T_1 - T_2} \quad [\%]$$
+        </div>
+        <div class="inputs-row" style="max-width:400px;">
             <div class="input-group">
-                <label>$q_{int}$ — jednostkowe zyski wewnętrzne [W/m²]</label>
-                <input type="number" id="qInt" value="6.0" step="0.5">
+                <label>$t_1$ &mdash; temp. wody podgrzanej [°C]</label>
+                <input type="number" id="hw_t1" step="0.01" placeholder="np. 55">
             </div>
             <div class="input-group">
-                <label>$A_f$ — powierzchnia użytkowa [m²]</label>
-                <input type="number" id="Af" value="135" step="1">
+                <label>$t_2$ &mdash; temp. wody zimnej [°C]</label>
+                <input type="number" id="hw_t2" step="0.01" placeholder="np. 10">
             </div>
         </div>
-        <button class="compute-btn" onclick="computeEp()">Oblicz E<sub>p</sub></button>
-        <div class="result-box" id="resultEsol">—</div>
-        <div class="result-box" id="resultEint">—</div>
-        <div class="result-box highlight" id="resultEp" style="margin-top:0.8rem;">Wynik pojawi się tutaj</div>
+        <button class="compute-btn" onclick="calcMu()">Oblicz &mu;<sub>cwu</sub></button>
+        <div class="result-box" id="res_mu">&mdash;</div>
     </div>
 
-    <!-- Section 3: E_d = E_0 - E_p -->
-    <div class="card">
-        <h2>3. Dobowe zapotrzebowanie na energię do ogrzewania — $E_d$</h2>
-        <div class="equation-block">
-            $$E_d = E_0 - E_p \quad [\text{GJ/d}]$$
-        </div>
-        <p style="font-size:0.95em;margin-bottom:0.8rem;">Kliknij przycisk aby obliczyć na podstawie wartości z sekcji 1 i 2.</p>
-        <button class="compute-btn" onclick="computeEd()">Oblicz E<sub>d</sub></button>
-        <div class="result-box highlight" id="resultEd">Wynik pojawi się tutaj</div>
-        <p class="note">Jeśli $E_d &lt; 0$, budynek nie wymaga ogrzewania w danych warunkach.</p>
-    </div>
+    <!-- Placeholder for future rows -->
+    <!-- =============== ROW 3 =============== -->
+    <div class="row-label">3. Obliczenie sezonowego COP dla pompy ciepła</div>
 
-    <!-- Section 4: Seasonal demand -->
-    <div class="card">
-        <h2>4. Sezonowe zapotrzebowanie na ciepło</h2>
+    <div class="card-wide">
+        <h2>Sezonowy współczynnik efektywności COP<sub>s</sub></h2>
         <div class="equation-block">
-            $$E_{season} = E_d \cdot n_{heating} \quad [\text{GJ}]$$
+            $$COP_s = \frac{Q_g}{E_{el}}$$
         </div>
-        <div class="inputs-grid">
+        <div class="inputs-row" style="max-width:400px;">
             <div class="input-group">
-                <label>$n_{heating}$ — długość sezonu grzewczego [d]</label>
-                <input type="number" id="nHeat" value="200" step="1">
+                <label>$Q_g$ &mdash; moc wytworzona [kWh]</label>
+                <input type="number" id="cop_Qg" step="0.01" placeholder="np. 10">
+            </div>
+            <div class="input-group">
+                <label>$E_{el}$ &mdash; pobór energii elektrycznej [kWh]</label>
+                <input type="number" id="cop_Eel" step="0.01" placeholder="np. 2.5">
             </div>
         </div>
-        <button class="compute-btn" onclick="computeSeason()">Oblicz E<sub>season</sub></button>
-        <div class="result-box highlight" id="resultSeason">Wynik pojawi się tutaj</div>
+        <button class="compute-btn" onclick="calcCOP()">Oblicz COP<sub>s</sub></button>
+        <div class="result-box" id="res_cop">&mdash;</div>
     </div>
+
+    <!-- =============== ROW 4 =============== -->
+    <div class="row-label">4. Praca pompy ciepła w czasie</div>
+
+    <div class="card-wide">
+        <h2>Wartość procentowa pracy pompy ciepła</h2>
+        <p style="margin:0 0 6px; color:#555;">Podaj liczbę godzin $k$ w dobie, gdy $\dot{V} > 0{,}01\;\text{m}^3/\text{s}$</p>
+        <div class="equation-block">
+            $$w = \frac{k}{24} \cdot 100\%$$
+        </div>
+        <div class="inputs-row" style="max-width:400px;">
+            <div class="input-group">
+                <label>$k$ &mdash; liczba godzin pracy w dobie [h]</label>
+                <input type="number" id="pump_k" step="0.01" min="0" max="24" placeholder="np. 8">
+            </div>
+        </div>
+        <button class="compute-btn" onclick="calcPumpWork()">Oblicz $w$</button>
+        <div class="result-box" id="res_pump_w">&mdash;</div>
+    </div>
+
+    <div id="future-rows"></div>
+
 </div>
 
 <script>
-    let lastE0 = null, lastEp = null, lastEd = null;
+    // ===== Lookup tables =====
+    let waterData = null; // array of [temp, rho, cp] from CSV
 
-    function computeE0() {
-        const U  = parseFloat(document.getElementById('U').value);
-        const A  = parseFloat(document.getElementById('A').value);
-        const Ti = parseFloat(document.getElementById('Ti').value);
-        const Te = parseFloat(document.getElementById('Te').value);
-        lastE0 = U * A * (Ti - Te) * 24 * 3600 / 1e9;
-        document.getElementById('resultE0').innerHTML =
-            '<b>E<sub>0</sub></b> = ' + lastE0.toFixed(4) + ' GJ/d';
-    }
+    fetch('data/interpolacja_wody.csv')
+        .then(r => r.text())
+        .then(text => {
+            const lines = text.trim().split('\n');
+            waterData = [];
+            for (let i = 1; i < lines.length; i++) { // skip header
+                const cols = lines[i].split(',');
+                const temp = parseFloat(cols[0]);
+                const rho = parseFloat(cols[2]);  // Gęstość ρ (kg/m³)
+                const cp = parseFloat(cols[3]);   // Ciepło właściwe cp (kJ/(kg·K))
+                if (!isNaN(temp) && !isNaN(rho) && !isNaN(cp)) {
+                    waterData.push([temp, rho, cp]);
+                }
+            }
+        });
 
-    function computeEp() {
-        const solarW = parseFloat(document.getElementById('solarW').value);
-        const tSol   = parseFloat(document.getElementById('tSol').value);
-        const qInt   = parseFloat(document.getElementById('qInt').value);
-        const Af     = parseFloat(document.getElementById('Af').value);
-
-        const Esol = solarW * tSol * 3600 / 1e9;
-        const Eint = qInt * Af * 24 * 3600 / 1e9;
-        lastEp = Esol + Eint;
-
-        document.getElementById('resultEsol').innerHTML =
-            '<b>E<sub>sol</sub></b> = ' + Esol.toFixed(4) + ' GJ/d';
-        document.getElementById('resultEint').innerHTML =
-            '<b>E<sub>int</sub></b> = ' + Eint.toFixed(4) + ' GJ/d';
-        document.getElementById('resultEp').innerHTML =
-            '<b>E<sub>p</sub></b> = ' + Esol.toFixed(4) + ' + ' + Eint.toFixed(4) + ' = <strong>' + lastEp.toFixed(4) + ' GJ/d</strong>';
-    }
-
-    function computeEd() {
-        if (lastE0 === null) computeE0();
-        if (lastEp === null) computeEp();
-        lastEd = lastE0 - lastEp;
-        let html = '<b>E<sub>d</sub></b> = ' + lastE0.toFixed(4) + ' − ' + lastEp.toFixed(4) + ' = <strong>' + lastEd.toFixed(4) + ' GJ/d</strong>';
-        if (lastEd < 0) {
-            html += '&ensp;<span style="color:#28a745;">(budynek nie wymaga ogrzewania)</span>';
+    function interpolateCol(T, colIdx) {
+        // colIdx: 1 = rho, 2 = cp
+        if (!waterData || waterData.length === 0) return null;
+        if (T <= waterData[0][0]) return waterData[0][colIdx];
+        if (T >= waterData[waterData.length - 1][0]) return waterData[waterData.length - 1][colIdx];
+        for (let i = 0; i < waterData.length - 1; i++) {
+            if (T >= waterData[i][0] && T <= waterData[i + 1][0]) {
+                const frac = (T - waterData[i][0]) / (waterData[i + 1][0] - waterData[i][0]);
+                return waterData[i][colIdx] + frac * (waterData[i + 1][colIdx] - waterData[i][colIdx]);
+            }
         }
-        document.getElementById('resultEd').innerHTML = html;
+        return null;
     }
 
-    function computeSeason() {
-        if (lastEd === null) computeEd();
-        const n = parseFloat(document.getElementById('nHeat').value);
-        const Eseason = lastEd * n;
-        const kWh = Eseason * 1e9 / 3.6e6;
-        document.getElementById('resultSeason').innerHTML =
-            '<b>E<sub>season</sub></b> = ' + Eseason.toFixed(2) + ' GJ &nbsp;\u2248&nbsp; ' + kWh.toFixed(0) + ' kWh';
+    // ===== Row 1 =====
+    function calc_d() {
+        const E0 = parseFloat(document.getElementById('d_E0').value);
+        const Ep = parseFloat(document.getElementById('d_Ep').value);
+        if (isNaN(E0) || isNaN(Ep)) { document.getElementById('res_d').textContent = 'Uzupełnij dane'; return; }
+        const Ed = E0 - Ep;
+        document.getElementById('res_d').innerHTML =
+            '<b>E<sub>d</sub></b> = ' + E0.toFixed(4) + ' \u2212 ' + Ep.toFixed(4) + ' = <strong>' + Ed.toFixed(4) + ' GJ/d</strong>';
+    }
+    function calc_m() {
+        const Ek = parseFloat(document.getElementById('m_Ek').value);
+        const En = parseFloat(document.getElementById('m_En').value);
+        if (isNaN(Ek) || isNaN(En)) { document.getElementById('res_m').textContent = 'Uzupełnij dane'; return; }
+        const Em = Ek - En;
+        document.getElementById('res_m').innerHTML =
+            '<b>E<sub>m</sub></b> = ' + Ek.toFixed(3) + ' \u2212 ' + En.toFixed(3) + ' = <strong>' + Em.toFixed(3) + ' GJ/miesi\u0105c</strong>';
+    }
+    function calc_s() {
+        const Er = parseFloat(document.getElementById('s_Er').value);
+        const Eo = parseFloat(document.getElementById('s_Eo').value);
+        if (isNaN(Er) || isNaN(Eo)) { document.getElementById('res_s').textContent = 'Uzupełnij dane'; return; }
+        const Es = Er - Eo;
+        document.getElementById('res_s').innerHTML =
+            '<b>E<sub>s</sub></b> = ' + Er.toFixed(2) + ' \u2212 ' + Eo.toFixed(2) + ' = <strong>' + Es.toFixed(2) + ' GJ/sezon</strong>';
+    }
+
+    // ===== Row 2 =====
+    let lastTsr = null, lastRho = null, lastCw = null;
+
+    function calcPanel2() {
+        const T1 = parseFloat(document.getElementById('hw_T1').value);
+        const T2 = parseFloat(document.getElementById('hw_T2').value);
+        const Vdot = parseFloat(document.getElementById('hw_Vdot').value);
+
+        if (isNaN(T1) || isNaN(T2)) {
+            document.getElementById('res_Tsr').textContent = 'Wprowadź T\u2081 i T\u2082';
+            return;
+        }
+
+        // T_sr
+        lastTsr = (T1 + T2) / 2;
+        document.getElementById('res_Tsr').innerHTML =
+            '<b>T<sub>śr</sub></b> = (' + T1.toFixed(2) + ' + ' + T2.toFixed(2) + ') / 2 = <strong>' + lastTsr.toFixed(2) + ' °C</strong>';
+
+        if (lastTsr < 0 || lastTsr > 100) {
+            document.getElementById('res_rho').innerHTML = 'T<sub>śr</sub> poza zakresem tablicy (0–100 °C)';
+            document.getElementById('res_cw').innerHTML = 'T<sub>śr</sub> poza zakresem tablicy (0–100 °C)';
+            document.getElementById('res_Qcwu').textContent = '\u2014';
+            return;
+        }
+
+        // rho
+        if (!waterData) {
+            document.getElementById('res_rho').textContent = 'Ładowanie tablicy...';
+            return;
+        }
+        lastRho = interpolateCol(lastTsr, 1);
+        document.getElementById('res_rho').innerHTML =
+            '<b>\u03C1<sub>w</sub>(' + lastTsr.toFixed(2) + ' °C)</b> = <strong>' + lastRho.toFixed(2) + ' kg/m\u00B3</strong>';
+
+        // c_w (CSV has cp in kJ/(kg·K), convert to J/(kg·K) for Q formula)
+        lastCw = interpolateCol(lastTsr, 2); // kJ/(kg·K)
+        document.getElementById('res_cw').innerHTML =
+            '<b>c<sub>w</sub>(' + lastTsr.toFixed(2) + ' °C)</b> = <strong>' + lastCw.toFixed(3) + ' kJ/(kg\u00B7K)</strong>';
+
+        // Q_cwu
+        if (isNaN(Vdot)) {
+            document.getElementById('res_Qcwu').textContent = 'Wprowadź przepływ \u0056\u0307';
+            return;
+        }
+        const dT = T1 - T2;
+        const cwJ = lastCw * 1000; // convert kJ to J
+        const Q = (Vdot * lastRho * cwJ * dT) / (3600 * 1000);
+        document.getElementById('res_Qcwu').innerHTML =
+            '<b>Q<sub>cwu śr</sub></b> = (' + Vdot + ' \u00D7 ' + lastRho.toFixed(2) + ' \u00D7 ' + cwJ.toFixed(1) + ' \u00D7 ' + dT.toFixed(2) + ') / (3600 \u00D7 1000) = <strong>' + Q.toFixed(3) + ' kW</strong>';
+    }
+
+    function calcMu() {
+        const T1 = parseFloat(document.getElementById('hw_T1').value);
+        const T2 = parseFloat(document.getElementById('hw_T2').value);
+        const t1 = parseFloat(document.getElementById('hw_t1').value);
+        const t2 = parseFloat(document.getElementById('hw_t2').value);
+        if (isNaN(T1) || isNaN(T2) || isNaN(t1) || isNaN(t2)) {
+            document.getElementById('res_mu').textContent = 'Uzupełnij T\u2081, T\u2082, t\u2081, t\u2082';
+            return;
+        }
+        const dT = T1 - T2;
+        if (dT === 0) {
+            document.getElementById('res_mu').textContent = 'T\u2081 \u2212 T\u2082 nie może być zerem';
+            return;
+        }
+        const dt = t1 - t2;
+        const mu = (dt / dT) * 100;
+        document.getElementById('res_mu').innerHTML =
+            '<b>\u03BC<sub>cwu</sub></b> = (' + t1.toFixed(2) + ' \u2212 ' + t2.toFixed(2) + ') / (' + T1.toFixed(2) + ' \u2212 ' + T2.toFixed(2) + ') = <strong>' + mu.toFixed(2) + ' %</strong>';
+    }
+
+    // ===== Row 3 =====
+    function calcCOP() {
+        const Qg = parseFloat(document.getElementById('cop_Qg').value);
+        const Eel = parseFloat(document.getElementById('cop_Eel').value);
+        if (isNaN(Qg) || isNaN(Eel)) {
+            document.getElementById('res_cop').textContent = 'Uzupe\u0142nij dane';
+            return;
+        }
+        if (Eel === 0) {
+            document.getElementById('res_cop').textContent = 'E_el nie mo\u017ce by\u0107 zerem';
+            return;
+        }
+        const cop = Qg / Eel;
+        document.getElementById('res_cop').innerHTML =
+            '<b>COP<sub>s</sub></b> = ' + Qg.toFixed(2) + ' / ' + Eel.toFixed(2) + ' = <strong>' + cop.toFixed(2) + '</strong>';
+    }
+
+    // ===== Row 4 =====
+    function calcPumpWork() {
+        const k = parseFloat(document.getElementById('pump_k').value);
+        if (isNaN(k)) {
+            document.getElementById('res_pump_w').textContent = 'Uzupełnij liczbę godzin k';
+            return;
+        }
+        if (k < 0 || k > 24) {
+            document.getElementById('res_pump_w').innerHTML = '<i>k</i> musi być w zakresie 0–24 h';
+            return;
+        }
+        const w = (k / 24) * 100;
+        document.getElementById('res_pump_w').innerHTML =
+            '<b>w</b> = (' + k.toFixed(2) + ' / 24) \u00D7 100% = <strong>' + w.toFixed(2) + ' %</strong>';
     }
 </script>
 </body>
