@@ -79,6 +79,16 @@
             min-height: 400px;
             overflow: hidden;
         }
+        .note {
+            font-size: 0.9em;
+            color: #666;
+            margin: 0.3rem 0 0.5rem;
+        }
+        .card h3 {
+            font-size: 0.95em;
+            margin: 1rem 0 0.3rem;
+            color: #495057;
+        }
     </style>
     <script>
         let authVerified = false;
@@ -135,10 +145,34 @@
         <h2>Parametry czynnika po stronie sieciowej</h2>
 
         <h3 style="margin-top:1rem;">Temperatura średnia czynnika $T_{\text{śr}}$</h3>
+        <p class="note">gdzie $T_1$ &mdash; temperatura zasilania [°C], $T_2$ &mdash; temperatura powrotu [°C]</p>
         <div class="equation-block">
             $$T_{\text{śr}} = \frac{T_1 + T_2}{2} \quad [°\text{C}]$$
         </div>
         <iframe class="plot-frame" src="temperatura_czynnika_po_stronie_sieciowej.html" frameborder="0"></iframe>
+    </div>
+
+    <div class="card">
+        <h3>Temperatura średnia w Kelvinach $T'_{\text{śr}}$</h3>
+        <div class="equation-block">
+            $$T'_{\text{śr}} = T_{\text{śr}} + 273{,}15 \quad [\text{K}]$$
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Gęstość wody $\rho_w(T'_{\text{śr}})$</h3>
+        <div class="equation-block">
+            $$\rho_w = 1000 - \frac{0{,}00198582 \cdot (T'_{\text{śr}} + 10) \cdot (T'_{\text{śr}} - 277)^2}{T'_{\text{śr}} - 205{,}8} \quad [\text{kg/m}^3]$$
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Moc wymiennika $Q_{\text{cwu śr}}$</h3>
+        <p class="note">gdzie $\dot{V}$ &mdash; przepływ objętościowy [cm³/h], $c_w$ &mdash; ciepło właściwe wody [kJ/(kg·K)]</p>
+        <div class="equation-block">
+            $$Q_{\text{cwu śr}} = \frac{\dot{V} \cdot \rho_w(T_{\text{śr}}) \cdot c_w(T_{\text{śr}}) \cdot (T_1 - T_2)}{3600 \cdot 1000} \quad [\text{kW}]$$
+        </div>
+        <iframe class="plot-frame" src="q_cwu_sr_full.html" frameborder="0"></iframe>
     </div>
 </div>
 <script>
