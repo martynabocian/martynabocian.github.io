@@ -651,8 +651,11 @@
         }
         const dt = t1 - t2;
         const mu = (dt / dT) * 100;
-        document.getElementById('res_mu').innerHTML =
-            '<b>\u03BC<sub>cwu</sub></b> = (' + fmt(t1,2) + ' \u2212 ' + fmt(t2,2) + ') / (' + fmt(T1,2) + ' \u2212 ' + fmt(T2,2) + ') = <strong>' + fmt(mu,2) + ' %</strong>';
+        var html = '<b>\u03BC<sub>cwu</sub></b> = (' + fmt(t1,2) + ' \u2212 ' + fmt(t2,2) + ') / (' + fmt(T1,2) + ' \u2212 ' + fmt(T2,2) + ') = <strong>' + fmt(mu,2) + ' %</strong>';
+        if (mu > 100) {
+            html += '<br><span style="display:inline-block;margin-top:0.25rem;color:#dc3545;font-weight:600;">Dane implikuj\u0105 sprawno\u015b\u0107 wi\u0119ksz\u0105 ni\u017c 100% \u2014 Nagroda Nobla do odebrania \uD83C\uDFC6</span>';
+        }
+        document.getElementById('res_mu').innerHTML = html;
     }
 
     // ===== Row 3 =====
