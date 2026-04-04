@@ -76,7 +76,8 @@
             border: 1px solid #dee2e6;
             border-radius: 8px;
             margin-top: 1rem;
-            min-height: 500px;
+            min-height: 400px;
+            overflow: hidden;
         }
     </style>
     <script>
@@ -127,6 +128,34 @@
         </div>
         <iframe class="plot-frame" src="sezonowe_zuzycie_ciepla.html" frameborder="0"></iframe>
     </div>
+
+    <div class="row-label">2. Obliczenie mocy wymiennika</div>
+
+    <div class="card">
+        <h2>Parametry czynnika po stronie sieciowej</h2>
+
+        <h3 style="margin-top:1rem;">Temperatura średnia czynnika $T_{\text{śr}}$</h3>
+        <div class="equation-block">
+            $$T_{\text{śr}} = \frac{T_1 + T_2}{2} \quad [°\text{C}]$$
+        </div>
+        <iframe class="plot-frame" src="temperatura_czynnika_po_stronie_sieciowej.html" frameborder="0"></iframe>
+    </div>
 </div>
+<script>
+    function resizeIframe(iframe) {
+        try {
+            iframe.style.height = iframe.contentWindow.document.documentElement.scrollHeight + 'px';
+        } catch(e) {}
+    }
+    document.querySelectorAll('.plot-frame').forEach(function(iframe) {
+        iframe.setAttribute('scrolling', 'no');
+        iframe.addEventListener('load', function() {
+            resizeIframe(iframe);
+            // retry after plotly finishes rendering
+            setTimeout(function() { resizeIframe(iframe); }, 1000);
+            setTimeout(function() { resizeIframe(iframe); }, 3000);
+        });
+    });
+</script>
 </body>
 </html>

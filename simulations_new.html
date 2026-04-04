@@ -442,7 +442,12 @@
         const Vdot = parseFloat(document.getElementById('hw_Vdot').value);
 
         if (isNaN(T1) || isNaN(T2)) {
-            document.getElementById('res_Tsr').textContent = 'Wprowadź T\u2081 i T\u2082';
+            var msg = 'Wprowadź <i>T</i><sub>1</sub> i <i>T</i><sub>2</sub>';
+            document.getElementById('res_Tsr').innerHTML = msg;
+            document.getElementById('res_TsrK').innerHTML = msg;
+            document.getElementById('res_rho').innerHTML = msg;
+            document.getElementById('res_cw').innerHTML = msg;
+            document.getElementById('res_Qcwu').innerHTML = msg;
             return;
         }
 
@@ -474,7 +479,7 @@
 
         // Q_cwu
         if (isNaN(Vdot)) {
-            document.getElementById('res_Qcwu').textContent = 'Wprowadź przepływ \u0056\u0307';
+            document.getElementById('res_Qcwu').innerHTML = 'Wprowadź przepływ <i>V̇</i>';
             return;
         }
         const dT = T1 - T2;
@@ -490,12 +495,12 @@
         const t1 = parseFloat(document.getElementById('hw_t1').value);
         const t2 = parseFloat(document.getElementById('hw_t2').value);
         if (isNaN(T1) || isNaN(T2) || isNaN(t1) || isNaN(t2)) {
-            document.getElementById('res_mu').textContent = 'Uzupełnij T\u2081, T\u2082, t\u2081, t\u2082';
+            document.getElementById('res_mu').innerHTML = 'Uzupełnij <i>T</i><sub>1</sub>, <i>T</i><sub>2</sub>, <i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>';
             return;
         }
         const dT = T1 - T2;
         if (dT === 0) {
-            document.getElementById('res_mu').textContent = 'T\u2081 \u2212 T\u2082 nie może być zerem';
+            document.getElementById('res_mu').innerHTML = '<i>T</i><sub>1</sub> − <i>T</i><sub>2</sub> nie może być zerem';
             return;
         }
         const dt = t1 - t2;
@@ -513,7 +518,7 @@
             return;
         }
         if (Eel === 0) {
-            document.getElementById('res_cop').textContent = 'E_el nie mo\u017ce by\u0107 zerem';
+            document.getElementById('res_cop').innerHTML = '<i>E</i><sub>el</sub> nie może być zerem';
             return;
         }
         const cop = Qg / Eel;
@@ -525,7 +530,7 @@
     function calcPumpWork() {
         const k = parseFloat(document.getElementById('pump_k').value);
         if (isNaN(k)) {
-            document.getElementById('res_pump_w').textContent = 'Uzupełnij liczbę godzin k';
+            document.getElementById('res_pump_w').innerHTML = 'Uzupełnij liczbę godzin <i>k</i>';
             return;
         }
         if (k < 0 || k > 24) {
