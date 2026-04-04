@@ -228,6 +228,16 @@
             font-size: 0.8em;
         }
         .remove-row-btn:hover { background: #c82333; }
+        .drag-handle {
+            cursor: grab;
+            user-select: none;
+            font-size: 1.1em;
+            color: #999;
+            padding: 0 0.3rem;
+        }
+        .drag-handle:active { cursor: grabbing; }
+        #cop-tbody tr.drag-over { border-top: 2px solid #007bff; }
+        #cop-tbody tr.dragging { opacity: 0.4; }
     </style>
     <script>
         let authVerified = false;
@@ -397,6 +407,7 @@
                 <table class="cop-table" id="cop-table">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>#</th>
                             <th>$Q_g$ [kWh]</th>
                             <th>$E_{el}$ [kWh]</th>
@@ -652,7 +663,15 @@
         const tbody = document.getElementById('cop-tbody');
         const tr = document.createElement('tr');
         tr.id = 'cop-row-' + copRowCount;
+        tr.draggable = true;
+        tr.addEventListener('dragstart', copDragStart);
+        tr.addEventListener('dragover', copDragOver);
+        tr.addEventListener('dragenter', copDragEnter);
+        tr.addEventListener('dragleave', copDragLeave);
+        tr.addEventListener('drop', copDrop);
+        tr.addEventListener('dragend', copDragEnd);
         tr.innerHTML =
+            '<td class="drag-handle">&#9776;</td>' +
             '<td>' + copRowCount + '</td>' +
             '<td><input type="text" inputmode="decimal" id="cop_Qg_' + copRowCount + '" placeholder="Q_g" oninput="calcCOP()"></td>' +
             '<td><input type="text" inputmode="decimal" id="cop_Eel_' + copRowCount + '" placeholder="E_el" oninput="calcCOP()"></td>' +
@@ -671,7 +690,50 @@
     function renumberCopRows() {
         var rows = document.querySelectorAll('#cop-tbody tr');
         rows.forEach(function(row, i) {
-            row.querySelector('td:first-child').textContent = i + 1;
+            row.querySelectorAll('td')[1].textContent = i + 1;
+        });
+        copRowCount = rows.length;
+    }
+
+    // ===== Drag-and-drop for COP rows =====
+    var copDragRow = null;
+    function copDragStart(e) {
+        copDragRow = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+    }
+    function copDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    }
+    function copDragEnter(e) {
+        e.preventDefault();
+        this.classList.add('drag-over');
+    }
+    function copDragLeave() {
+        this.classList.remove('drag-over');
+    }
+    function copDrop(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        if (copDragRow !== this) {
+            var tbody = document.getElementById('cop-tbody');
+            var rows = Array.from(tbody.querySelectorAll('tr'));
+            var fromIdx = rows.indexOf(copDragRow);
+            var toIdx = rows.indexOf(this);
+            if (fromIdx < toIdx) {
+                tbody.insertBefore(copDragRow, this.nextSibling);
+            } else {
+                tbody.insertBefore(copDragRow, this);
+            }
+            renumberCopRows();
+            calcCOP();
+        }
+    }
+    function copDragEnd() {
+        this.classList.remove('dragging');
+        document.querySelectorAll('#cop-tbody tr').forEach(function(r) {
+            r.classList.remove('drag-over');
         });
     }
 
