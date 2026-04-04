@@ -8,6 +8,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
         onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -166,7 +167,67 @@
         }
         @media (max-width: 900px) {
             .cards-row { grid-template-columns: 1fr; }
+            .cop-layout { grid-template-columns: 1fr; }
         }
+        .cop-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .cop-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        .cop-table th, .cop-table td {
+            border: 1px solid #dee2e6;
+            padding: 0.4rem 0.6rem;
+            text-align: center;
+        }
+        .cop-table th {
+            background: #f1f3f5;
+            font-weight: 600;
+            color: #495057;
+        }
+        .cop-table input {
+            width: 90px;
+            padding: 0.3rem 0.4rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        .cop-table input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+        }
+        .cop-table .result-cell {
+            font-weight: 600;
+            color: #007bff;
+        }
+        .add-row-btn {
+            padding: 0.35rem 1rem;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            margin-top: 0.5rem;
+        }
+        .add-row-btn:hover { background: #218838; }
+        .remove-row-btn {
+            padding: 0.2rem 0.5rem;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .remove-row-btn:hover { background: #c82333; }
     </style>
     <script>
         let authVerified = false;
@@ -203,14 +264,13 @@
             </div>
             <div class="input-group">
                 <label>$E_o$ &mdash; zużycie ciepła końcowe dla danego dnia [GJ/d]</label>
-                <input type="number" id="d_E0" step="0.0001" placeholder="np. 0.1437">
+                <input type="number" id="d_E0" step="0.0001" placeholder="np. 0.1437" oninput="calc_d()">
             </div>
             <div class="input-group">
                 <label>$E_p$ &mdash; zużycie ciepła początkowe dla danego dnia [GJ/d]</label>
-                <input type="number" id="d_Ep" step="0.0001" placeholder="np. 0.1109">
+                <input type="number" id="d_Ep" step="0.0001" placeholder="np. 0.1109" oninput="calc_d()">
             </div>
             <div class="spacer"></div>
-            <button class="compute-btn" onclick="calc_d()">Oblicz E<sub>d</sub></button>
             <div class="result-box" id="res_d">&mdash;</div>
         </div>
 
@@ -222,14 +282,13 @@
             </div>
             <div class="input-group">
                 <label>$E_k$ &mdash; zużycie ciepła końcowe dla danego miesiąca [GJ/miesiąc]</label>
-                <input type="number" id="m_Ek" step="0.001" placeholder="np. 4.311">
+                <input type="number" id="m_Ek" step="0.001" placeholder="np. 4.311" oninput="calc_m()">
             </div>
             <div class="input-group">
                 <label>$E_n$ &mdash; zużycie ciepła początkowe dla danego miesiąca [GJ/miesiąc]</label>
-                <input type="number" id="m_En" step="0.001" placeholder="np. 3.327">
+                <input type="number" id="m_En" step="0.001" placeholder="np. 3.327" oninput="calc_m()">
             </div>
             <div class="spacer"></div>
-            <button class="compute-btn" onclick="calc_m()">Oblicz E<sub>m</sub></button>
             <div class="result-box" id="res_m">&mdash;</div>
         </div>
 
@@ -241,14 +300,13 @@
             </div>
             <div class="input-group">
                 <label>$E_r$ &mdash; zużycie ciepła końcowe dla danego sezonu [GJ/sezon]</label>
-                <input type="number" id="s_Er" step="0.01" placeholder="np. 28.74">
+                <input type="number" id="s_Er" step="0.01" placeholder="np. 28.74" oninput="calc_s()">
             </div>
             <div class="input-group">
                 <label>$E_t$ &mdash; zużycie ciepła początkowe dla danego sezonu [GJ/sezon]</label>
-                <input type="number" id="s_Eo" step="0.01" placeholder="np. 22.18">
+                <input type="number" id="s_Eo" step="0.01" placeholder="np. 22.18" oninput="calc_s()">
             </div>
             <div class="spacer"></div>
-            <button class="compute-btn" onclick="calc_s()">Oblicz E<sub>s</sub></button>
             <div class="result-box" id="res_s">&mdash;</div>
         </div>
     </div>
@@ -262,18 +320,17 @@
         <div class="inputs-row">
             <div class="input-group">
                 <label>$T_1$ &mdash; temperatura zasilania [°C]</label>
-                <input type="number" id="hw_T1" step="0.01" min="0" max="100" placeholder="np. 70">
+                <input type="number" id="hw_T1" step="0.01" min="0" max="100" placeholder="np. 70" oninput="calcPanel2();calcMu()">
             </div>
             <div class="input-group">
                 <label>$T_2$ &mdash; temperatura powrotu [°C]</label>
-                <input type="number" id="hw_T2" step="0.01" min="0" max="100" placeholder="np. 40">
+                <input type="number" id="hw_T2" step="0.01" min="0" max="100" placeholder="np. 40" oninput="calcPanel2();calcMu()">
             </div>
             <div class="input-group">
                 <label>$\dot{V}$ &mdash; przepływ objętościowy [cm³/h]</label>
-                <input type="number" id="hw_Vdot" step="0.1" placeholder="np. 500">
+                <input type="number" id="hw_Vdot" step="0.1" placeholder="np. 500" oninput="calcPanel2()">
             </div>
         </div>
-        <button class="compute-btn" onclick="calcPanel2()">Oblicz wszystko</button>
 
         <!-- T_sr -->
         <h3>Temperatura średnia czynnika $T_{\text{śr}}$</h3>
@@ -313,17 +370,16 @@
         <div class="equation-block">
             $$\mu_{\text{cwu}} = \frac{t_1 - t_2}{T_1 - T_2} \quad [\%]$$
         </div>
-        <div class="inputs-row" style="max-width:400px;">
+        <div class="inputs-row">
             <div class="input-group">
                 <label style="white-space:nowrap;">$t_1$ &mdash; temperatura na wyjściu z wymiennika [°C]</label>
-                <input type="number" id="hw_t1" step="0.01" min="0" max="100" placeholder="np. 55">
+                <input type="number" id="hw_t1" step="0.01" min="0" max="100" placeholder="np. 55" oninput="calcMu()">
             </div>
             <div class="input-group">
                 <label style="white-space:nowrap;">$t_2$ &mdash; temperatura na wejściu do wymiennika [°C]</label>
-                <input type="number" id="hw_t2" step="0.01" min="0" max="100" placeholder="np. 10">
+                <input type="number" id="hw_t2" step="0.01" min="0" max="100" placeholder="np. 10" oninput="calcMu()">
             </div>
         </div>
-        <button class="compute-btn" onclick="calcMu()">Oblicz &mu;<sub>cwu</sub></button>
         <div class="result-box" id="res_mu">&mdash;</div>
     </div>
 
@@ -336,18 +392,27 @@
         <div class="equation-block">
             $$COP_s = \frac{Q_g}{E_{el}}$$
         </div>
-        <div class="inputs-row" style="max-width:400px;">
-            <div class="input-group">
-                <label>$Q_g$ &mdash; moc wytworzona [kWh]</label>
-                <input type="number" id="cop_Qg" step="0.01" placeholder="np. 10">
+        <div class="cop-layout">
+            <div>
+                <table class="cop-table" id="cop-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>$Q_g$ [kWh]</th>
+                            <th>$E_{el}$ [kWh]</th>
+                            <th>COP<sub>s</sub></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="cop-tbody">
+                    </tbody>
+                </table>
+                <button class="add-row-btn" onclick="addCopRow()">+ Dodaj wiersz</button>
             </div>
-            <div class="input-group">
-                <label style="white-space:nowrap;">$E_{el}$ &mdash; pobór energii elektrycznej [kWh]</label>
-                <input type="number" id="cop_Eel" step="0.01" placeholder="np. 2.5">
+            <div>
+                <div id="cop-plot" style="width:100%;min-height:350px;background:#fff;border:1px solid #dee2e6;border-radius:8px;"></div>
             </div>
         </div>
-        <button class="compute-btn" onclick="calcCOP()">Oblicz COP<sub>s</sub></button>
-        <div class="result-box" id="res_cop">&mdash;</div>
     </div>
 
     <!-- =============== ROW 4 =============== -->
@@ -362,10 +427,9 @@
         <div class="inputs-row" style="max-width:400px;">
             <div class="input-group">
                 <label>$k$ &mdash; liczba godzin pracy w dobie [h]</label>
-                <input type="number" id="pump_k" step="0.01" min="0" max="24" placeholder="np. 8">
+                <input type="number" id="pump_k" step="0.01" min="0" max="24" placeholder="np. 8" oninput="calcPumpWork()">
             </div>
         </div>
-        <button class="compute-btn" onclick="calcPumpWork()">Oblicz $w$</button>
         <div class="result-box" id="res_pump_w">&mdash;</div>
     </div>
 
@@ -409,25 +473,34 @@
 
     // ===== Row 1 =====
     function calc_d() {
-        const Eo = parseFloat(document.getElementById('d_E0').value);
-        const Ep = parseFloat(document.getElementById('d_Ep').value);
-        if (isNaN(Eo) || isNaN(Ep)) { document.getElementById('res_d').textContent = 'Uzupełnij dane'; return; }
+        var v1 = document.getElementById('d_E0').value, v2 = document.getElementById('d_Ep').value;
+        if (v1 === '' || v2 === '') { document.getElementById('res_d').textContent = '—'; return; }
+        const Eo = parseFloat(v1), Ep = parseFloat(v2);
+        if (isNaN(Eo) || isNaN(Ep)) { document.getElementById('res_d').innerHTML = 'Wartości muszą być liczbami'; return; }
+        if (Eo < 0 || Ep < 0) { document.getElementById('res_d').innerHTML = '<i>E</i><sub>o</sub> i <i>E</i><sub>p</sub> muszą być ≥ 0'; return; }
+        if (Eo < Ep) { document.getElementById('res_d').innerHTML = '<i>E</i><sub>o</sub> musi być ≥ <i>E</i><sub>p</sub>'; return; }
         const Ed = Eo - Ep;
         document.getElementById('res_d').innerHTML =
             '<b>E<sub>d</sub></b> = ' + Eo.toFixed(4) + ' \u2212 ' + Ep.toFixed(4) + ' = <strong>' + Ed.toFixed(4) + ' GJ/d</strong>';
     }
     function calc_m() {
-        const Ek = parseFloat(document.getElementById('m_Ek').value);
-        const En = parseFloat(document.getElementById('m_En').value);
-        if (isNaN(Ek) || isNaN(En)) { document.getElementById('res_m').textContent = 'Uzupełnij dane'; return; }
+        var v1 = document.getElementById('m_Ek').value, v2 = document.getElementById('m_En').value;
+        if (v1 === '' || v2 === '') { document.getElementById('res_m').textContent = '—'; return; }
+        const Ek = parseFloat(v1), En = parseFloat(v2);
+        if (isNaN(Ek) || isNaN(En)) { document.getElementById('res_m').innerHTML = 'Wartości muszą być liczbami'; return; }
+        if (Ek < 0 || En < 0) { document.getElementById('res_m').innerHTML = '<i>E</i><sub>k</sub> i <i>E</i><sub>n</sub> muszą być ≥ 0'; return; }
+        if (Ek < En) { document.getElementById('res_m').innerHTML = '<i>E</i><sub>k</sub> musi być ≥ <i>E</i><sub>n</sub>'; return; }
         const Em = Ek - En;
         document.getElementById('res_m').innerHTML =
             '<b>E<sub>m</sub></b> = ' + Ek.toFixed(3) + ' \u2212 ' + En.toFixed(3) + ' = <strong>' + Em.toFixed(3) + ' GJ/miesi\u0105c</strong>';
     }
     function calc_s() {
-        const Er = parseFloat(document.getElementById('s_Er').value);
-        const Et = parseFloat(document.getElementById('s_Eo').value);
-        if (isNaN(Er) || isNaN(Et)) { document.getElementById('res_s').textContent = 'Uzupełnij dane'; return; }
+        var v1 = document.getElementById('s_Er').value, v2 = document.getElementById('s_Eo').value;
+        if (v1 === '' || v2 === '') { document.getElementById('res_s').textContent = '—'; return; }
+        const Er = parseFloat(v1), Et = parseFloat(v2);
+        if (isNaN(Er) || isNaN(Et)) { document.getElementById('res_s').innerHTML = 'Wartości muszą być liczbami'; return; }
+        if (Er < 0 || Et < 0) { document.getElementById('res_s').innerHTML = '<i>E</i><sub>r</sub> i <i>E</i><sub>t</sub> muszą być ≥ 0'; return; }
+        if (Er < Et) { document.getElementById('res_s').innerHTML = '<i>E</i><sub>r</sub> musi być ≥ <i>E</i><sub>t</sub>'; return; }
         const Es = Er - Et;
         document.getElementById('res_s').innerHTML =
             '<b>E<sub>s</sub></b> = ' + Er.toFixed(2) + ' \u2212 ' + Et.toFixed(2) + ' = <strong>' + Es.toFixed(2) + ' GJ/sezon</strong>';
@@ -437,35 +510,26 @@
     let lastTsr = null, lastRho = null, lastCw = null;
 
     function calcPanel2() {
-        const T1 = parseFloat(document.getElementById('hw_T1').value);
-        const T2 = parseFloat(document.getElementById('hw_T2').value);
+        var vT1 = document.getElementById('hw_T1').value;
+        var vT2 = document.getElementById('hw_T2').value;
+        const T1 = parseFloat(vT1);
+        const T2 = parseFloat(vT2);
         const Vdot = parseFloat(document.getElementById('hw_Vdot').value);
 
-        if (isNaN(T1) || isNaN(T2)) {
-            var msg = 'Wprowadź <i>T</i><sub>1</sub> i <i>T</i><sub>2</sub>';
-            document.getElementById('res_Tsr').innerHTML = msg;
-            document.getElementById('res_TsrK').innerHTML = msg;
-            document.getElementById('res_rho').innerHTML = msg;
-            document.getElementById('res_cw').innerHTML = msg;
-            document.getElementById('res_Qcwu').innerHTML = msg;
-            return;
+        function setAllP2(msg) {
+            ['res_Tsr','res_TsrK','res_rho','res_cw','res_Qcwu'].forEach(function(id) {
+                document.getElementById(id).innerHTML = msg;
+            });
         }
+
+        if (vT1 === '' || vT2 === '') { setAllP2('—'); return; }
+        if (isNaN(T1) || isNaN(T2)) { setAllP2('Wartości muszą być liczbami'); return; }
         if (T1 < 0 || T1 > 100 || T2 < 0 || T2 > 100) {
-            var msg = '<i>T</i><sub>1</sub> i <i>T</i><sub>2</sub> muszą być w zakresie 0–100 °C';
-            document.getElementById('res_Tsr').innerHTML = msg;
-            document.getElementById('res_TsrK').innerHTML = msg;
-            document.getElementById('res_rho').innerHTML = msg;
-            document.getElementById('res_cw').innerHTML = msg;
-            document.getElementById('res_Qcwu').innerHTML = msg;
+            setAllP2('<i>T</i><sub>1</sub> i <i>T</i><sub>2</sub> muszą być w zakresie 0–100 °C');
             return;
         }
         if (T1 <= T2) {
-            var msg = '<i>T</i><sub>1</sub> musi być większe od <i>T</i><sub>2</sub>';
-            document.getElementById('res_Tsr').innerHTML = msg;
-            document.getElementById('res_TsrK').innerHTML = msg;
-            document.getElementById('res_rho').innerHTML = msg;
-            document.getElementById('res_cw').innerHTML = msg;
-            document.getElementById('res_Qcwu').innerHTML = msg;
+            setAllP2('<i>T</i><sub>1</sub> musi być większe od <i>T</i><sub>2</sub>');
             return;
         }
 
@@ -500,6 +564,10 @@
             document.getElementById('res_Qcwu').innerHTML = 'Wprowadź przepływ <i>V̇</i>';
             return;
         }
+        if (Vdot < 0) {
+            document.getElementById('res_Qcwu').innerHTML = '<i>V̇</i> musi być ≥ 0';
+            return;
+        }
         const dT = T1 - T2;
         const cwJ = lastCw * 1000; // convert kJ to J
         const Q = (Vdot * lastRho * cwJ * dT) / (3600 * 1000);
@@ -508,12 +576,17 @@
     }
 
     function calcMu() {
-        const T1 = parseFloat(document.getElementById('hw_T1').value);
-        const T2 = parseFloat(document.getElementById('hw_T2').value);
-        const t1 = parseFloat(document.getElementById('hw_t1').value);
-        const t2 = parseFloat(document.getElementById('hw_t2').value);
+        var vt1 = document.getElementById('hw_t1').value;
+        var vt2 = document.getElementById('hw_t2').value;
+        var vT1 = document.getElementById('hw_T1').value;
+        var vT2 = document.getElementById('hw_T2').value;
+        if (vt1 === '' || vt2 === '' || vT1 === '' || vT2 === '') {
+            document.getElementById('res_mu').textContent = '—'; return;
+        }
+        const T1 = parseFloat(vT1), T2 = parseFloat(vT2);
+        const t1 = parseFloat(vt1), t2 = parseFloat(vt2);
         if (isNaN(T1) || isNaN(T2) || isNaN(t1) || isNaN(t2)) {
-            document.getElementById('res_mu').innerHTML = 'Uzupełnij <i>T</i><sub>1</sub>, <i>T</i><sub>2</sub>, <i>t</i><sub>1</sub>, <i>t</i><sub>2</sub>';
+            document.getElementById('res_mu').innerHTML = 'Wartości muszą być liczbami';
             return;
         }
         if (t1 < 0 || t1 > 100 || t2 < 0 || t2 > 100) {
@@ -536,27 +609,115 @@
     }
 
     // ===== Row 3 =====
-    function calcCOP() {
-        const Qg = parseFloat(document.getElementById('cop_Qg').value);
-        const Eel = parseFloat(document.getElementById('cop_Eel').value);
-        if (isNaN(Qg) || isNaN(Eel)) {
-            document.getElementById('res_cop').textContent = 'Uzupe\u0142nij dane';
-            return;
-        }
-        if (Eel === 0) {
-            document.getElementById('res_cop').innerHTML = '<i>E</i><sub>el</sub> nie może być zerem';
-            return;
-        }
-        const cop = Qg / Eel;
-        document.getElementById('res_cop').innerHTML =
-            '<b>COP<sub>s</sub></b> = ' + Qg.toFixed(2) + ' / ' + Eel.toFixed(2) + ' = <strong>' + cop.toFixed(2) + '</strong>';
+    let copRowCount = 0;
+
+    function addCopRow() {
+        copRowCount++;
+        const tbody = document.getElementById('cop-tbody');
+        const tr = document.createElement('tr');
+        tr.id = 'cop-row-' + copRowCount;
+        tr.innerHTML =
+            '<td>' + copRowCount + '</td>' +
+            '<td><input type="number" id="cop_Qg_' + copRowCount + '" step="0.01" placeholder="Q_g" oninput="calcCOP()"></td>' +
+            '<td><input type="number" id="cop_Eel_' + copRowCount + '" step="0.01" placeholder="E_el" oninput="calcCOP()"></td>' +
+            '<td class="result-cell" id="cop_res_' + copRowCount + '">&mdash;</td>' +
+            '<td><button class="remove-row-btn" onclick="removeCopRow(' + copRowCount + ')">&times;</button></td>';
+        tbody.appendChild(tr);
     }
+
+    function removeCopRow(id) {
+        var row = document.getElementById('cop-row-' + id);
+        if (row) row.remove();
+        renumberCopRows();
+        calcCOP();
+    }
+
+    function renumberCopRows() {
+        var rows = document.querySelectorAll('#cop-tbody tr');
+        rows.forEach(function(row, i) {
+            row.querySelector('td:first-child').textContent = i + 1;
+        });
+    }
+
+    function calcCOP() {
+        var rows = document.querySelectorAll('#cop-tbody tr');
+        var xVals = [];
+        var yVals = [];
+        var idx = 0;
+        rows.forEach(function(row) {
+            idx++;
+            var inputs = row.querySelectorAll('input');
+            var resCell = row.querySelector('.result-cell');
+            var Qg = parseFloat(inputs[0].value);
+            var Eel = parseFloat(inputs[1].value);
+            if (inputs[0].value === '' || inputs[1].value === '') {
+                resCell.textContent = '—';
+                resCell.style.color = '#999';
+                return;
+            }
+            if (isNaN(Qg) || isNaN(Eel)) {
+                resCell.textContent = 'podaj liczby';
+                resCell.style.color = '#dc3545';
+                return;
+            }
+            if (Qg <= 0) {
+                resCell.innerHTML = 'Q<sub>g</sub> > 0';
+                resCell.style.color = '#dc3545';
+                return;
+            }
+            if (Eel <= 0) {
+                resCell.innerHTML = 'E<sub>el</sub> > 0';
+                resCell.style.color = '#dc3545';
+                return;
+            }
+            var cop = Qg / Eel;
+            resCell.textContent = cop.toFixed(2);
+            resCell.style.color = '#007bff';
+            xVals.push(idx);
+            yVals.push(cop);
+        });
+
+        // Update plot
+        var trace = {
+            x: xVals,
+            y: yVals,
+            mode: 'lines+markers',
+            type: 'scatter',
+            marker: { color: '#007bff', size: 8 },
+            line: { color: '#007bff', width: 2 },
+            name: 'COP\u209b'
+        };
+        var layout = {
+            title: { text: 'Sezonowy COP\u209b', font: { size: 14 } },
+            xaxis: {
+                title: 'Nr wiersza',
+                dtick: 1,
+                zeroline: false
+            },
+            yaxis: {
+                title: 'COP\u209b',
+                zeroline: false
+            },
+            margin: { t: 40, r: 20, b: 50, l: 55 },
+            paper_bgcolor: '#fff',
+            plot_bgcolor: '#f8f9fa',
+            font: { family: 'system-ui, sans-serif' }
+        };
+        Plotly.newPlot('cop-plot', [trace], layout, { responsive: true });
+    }
+
+    // Start with one row
+    addCopRow();
+    // Init empty plot
+    calcCOP();
 
     // ===== Row 4 =====
     function calcPumpWork() {
-        const k = parseFloat(document.getElementById('pump_k').value);
+        var v = document.getElementById('pump_k').value;
+        if (v === '') { document.getElementById('res_pump_w').textContent = '—'; return; }
+        const k = parseFloat(v);
         if (isNaN(k)) {
-            document.getElementById('res_pump_w').innerHTML = 'Uzupełnij liczbę godzin <i>k</i>';
+            document.getElementById('res_pump_w').innerHTML = 'Wartość <i>k</i> musi być liczbą';
             return;
         }
         if (k < 0 || k > 24) {
