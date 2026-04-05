@@ -289,13 +289,15 @@
             <div class="equation-block">
                 $$E_d = E_o - E_p \quad [\text{GJ/d}]$$
             </div>
-            <div class="input-group">
-                <label>$E_o$ &mdash; zużycie ciepła końcowe dla danego dnia [GJ]</label>
-                <input type="text" inputmode="decimal" id="d_E0" placeholder="np. 0,1437" oninput="calc_d()">
-            </div>
-            <div class="input-group">
-                <label>$E_p$ &mdash; zużycie ciepła początkowe dla danego dnia [GJ]</label>
-                <input type="text" inputmode="decimal" id="d_Ep" placeholder="np. 0,1109" oninput="calc_d()">
+            <div class="inputs-row">
+                <div class="input-group">
+                    <label>$E_o$ &mdash; zużycie ciepła końcowe dla danego dnia [GJ]</label>
+                    <input type="text" inputmode="decimal" id="d_E0" placeholder="np. 0,1437" oninput="calc_d()">
+                </div>
+                <div class="input-group">
+                    <label>$E_p$ &mdash; zużycie ciepła początkowe dla danego dnia [GJ]</label>
+                    <input type="text" inputmode="decimal" id="d_Ep" placeholder="np. 0,1109" oninput="calc_d()">
+                </div>
             </div>
             <div class="spacer"></div>
             <div class="result-box" id="res_d">&mdash;</div>
@@ -307,13 +309,15 @@
             <div class="equation-block">
                 $$E_m = E_k - E_n \quad [\text{GJ/miesiąc}]$$
             </div>
-            <div class="input-group">
-                <label>$E_k$ &mdash; zużycie ciepła końcowe dla danego miesiąca [GJ]</label>
-                <input type="text" inputmode="decimal" id="m_Ek" placeholder="np. 4,311" oninput="calc_m()">
-            </div>
-            <div class="input-group">
-                <label>$E_n$ &mdash; zużycie ciepła początkowe dla danego miesiąca [GJ]</label>
-                <input type="text" inputmode="decimal" id="m_En" placeholder="np. 3,327" oninput="calc_m()">
+            <div class="inputs-row">
+                <div class="input-group">
+                    <label>$E_k$ &mdash; zużycie ciepła końcowe dla danego miesiąca [GJ]</label>
+                    <input type="text" inputmode="decimal" id="m_Ek" placeholder="np. 4,311" oninput="calc_m()">
+                </div>
+                <div class="input-group">
+                    <label>$E_n$ &mdash; zużycie ciepła początkowe dla danego miesiąca [GJ]</label>
+                    <input type="text" inputmode="decimal" id="m_En" placeholder="np. 3,327" oninput="calc_m()">
+                </div>
             </div>
             <div class="spacer"></div>
             <div class="result-box" id="res_m">&mdash;</div>
@@ -325,13 +329,15 @@
             <div class="equation-block">
                 $$E_s = E_r - E_t \quad [\text{GJ/sezon}]$$
             </div>
-            <div class="input-group">
-                <label>$E_r$ &mdash; zużycie ciepła końcowe dla danego sezonu [GJ]</label>
-                <input type="text" inputmode="decimal" id="s_Er" placeholder="np. 28,74" oninput="calc_s()">
-            </div>
-            <div class="input-group">
-                <label>$E_t$ &mdash; zużycie ciepła początkowe dla danego sezonu [GJ]</label>
-                <input type="text" inputmode="decimal" id="s_Eo" placeholder="np. 22,18" oninput="calc_s()">
+            <div class="inputs-row">
+                <div class="input-group">
+                    <label>$E_r$ &mdash; zużycie ciepła końcowe dla danego sezonu [GJ]</label>
+                    <input type="text" inputmode="decimal" id="s_Er" placeholder="np. 28,74" oninput="calc_s()">
+                </div>
+                <div class="input-group">
+                    <label>$E_t$ &mdash; zużycie ciepła początkowe dla danego sezonu [GJ]</label>
+                    <input type="text" inputmode="decimal" id="s_Eo" placeholder="np. 22,18" oninput="calc_s()">
+                </div>
             </div>
             <div class="spacer"></div>
             <div class="result-box" id="res_s">&mdash;</div>
