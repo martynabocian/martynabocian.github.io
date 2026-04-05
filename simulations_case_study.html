@@ -8,6 +8,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
         onload="renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -88,6 +89,23 @@
             font-size: 0.95em;
             margin: 1rem 0 0.3rem;
             color: #495057;
+        }
+        .cw-section {
+            display: flex;
+            gap: 1.2rem;
+            align-items: stretch;
+        }
+        .cw-section .cw-left {
+            flex: 1;
+            min-width: 0;
+        }
+        .cw-section .cw-right {
+            flex: 0 0 320px;
+            min-height: 160px;
+        }
+        @media (max-width: 900px) {
+            .cw-section { flex-direction: column; }
+            .cw-section .cw-right { flex: none; width: 100%; min-height: 220px; }
         }
 
         /* ── Instrukcja obsługi (z plot.html) ── */
@@ -359,8 +377,23 @@
 
     <div class="card">
         <h3>Gęstość wody $\rho_w(T'_{\text{śr}})$</h3>
-        <div class="equation-block">
-            $$\rho_w = 1000 - \frac{0{,}00198582 \cdot (T'_{\text{śr}} + 10) \cdot (T'_{\text{śr}} - 277)^2}{T'_{\text{śr}} - 205{,}8} \quad [\text{kg/m}^3]$$
+        <div class="cw-section">
+            <div class="cw-left">
+                <div class="equation-block">
+                    $$\rho_w = 1000 - \frac{0{,}00198582 \cdot (T'_{\text{śr}} + 10) \cdot (T'_{\text{śr}} - 277)^2}{T'_{\text{śr}} - 205{,}8} \quad [\text{kg/m}^3]$$
+                </div>
+            </div>
+            <div class="cw-right" id="rho-plot"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Ciepło właściwe wody $c_w(T_{\text{śr}})$</h3>
+        <div class="cw-section">
+            <div class="cw-left">
+                <p class="note">Wartość interpolowana z tablicy właściwości wody (zakres 0–100 °C, dokładność 0,01 °C).</p>
+            </div>
+            <div class="cw-right" id="cw-plot"></div>
         </div>
     </div>
 
@@ -436,6 +469,106 @@
         });
     });
 </script>
+<script>
+    /* ── Inline Plotly plots for c_w and rho_w ── */
+    var waterData = [];
+    fetch('data/interpolacja_wody.csv')
+        .then(function(r){ return r.text(); })
+        .then(function(txt){
+            txt.trim().split('\n').forEach(function(line, i){
+                if (i === 0) return;
+                var cols = line.split(',');
+                if (cols.length >= 4) {
+                    waterData.push([parseFloat(cols[0]), parseFloat(cols[1]), parseFloat(cols[3])]);
+                }
+            });
+            renderCwPlot();
+            renderRhoPlot();
+            // Apply dark mode to plots if already dark
+            if (document.body.classList.contains('dark')) relayoutPlotsDark(true);
+        });
+
+    function renderCwPlot() {
+        if (!waterData || waterData.length === 0) return;
+        var step = Math.max(1, Math.floor(waterData.length / 200));
+        var xVals = [], yVals = [];
+        for (var i = 0; i < waterData.length; i += step) {
+            xVals.push(waterData[i][0]);
+            yVals.push(waterData[i][2]);
+        }
+        if (xVals[xVals.length - 1] !== waterData[waterData.length - 1][0]) {
+            xVals.push(waterData[waterData.length - 1][0]);
+            yVals.push(waterData[waterData.length - 1][2]);
+        }
+        var trace = {
+            x: xVals, y: yVals,
+            mode: 'lines',
+            line: { color: '#007bff', width: 2 },
+            showlegend: false,
+            hovertemplate: 'T<sub>śr</sub> = %{x:.1f} °C<br>c<sub>w</sub> = %{y:.4f} kJ/(kg·K)<extra></extra>'
+        };
+        var layout = {
+            margin: { l: 52, r: 10, t: 10, b: 40 },
+            xaxis: { title: { text: 'T<sub>śr</sub> [°C]', font: { size: 11 } }, tickfont: { size: 10 } },
+            yaxis: { title: { text: 'c<sub>w</sub> [kJ/(kg·K)]', font: { size: 11 } }, tickfont: { size: 10 } },
+            plot_bgcolor: '#f8f9fa',
+            paper_bgcolor: 'white',
+            showlegend: false,
+            hovermode: 'closest'
+        };
+        Plotly.newPlot('cw-plot', [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    function renderRhoPlot() {
+        var xVals = [], yVals = [];
+        for (var t = 0; t <= 100; t += 0.5) {
+            var TK = t + 273.15;
+            var rho = 1000 - (0.00198582 * (TK + 10) * Math.pow(TK - 277, 2)) / (TK - 205.8);
+            xVals.push(t);
+            yVals.push(rho);
+        }
+        var trace = {
+            x: xVals, y: yVals,
+            mode: 'lines',
+            line: { color: '#007bff', width: 2 },
+            showlegend: false,
+            hovertemplate: 'T\u2032<sub>śr</sub> = %{x:.1f} °C<br>\u03C1<sub>w</sub> = %{y:.2f} kg/m³<extra></extra>'
+        };
+        var layout = {
+            margin: { l: 52, r: 10, t: 10, b: 40 },
+            xaxis: { title: { text: 'T<sub>śr</sub> [°C]', font: { size: 11 } }, tickfont: { size: 10 } },
+            yaxis: { title: { text: '\u03C1<sub>w</sub> [kg/m³]', font: { size: 11 } }, tickfont: { size: 10 } },
+            plot_bgcolor: '#f8f9fa',
+            paper_bgcolor: 'white',
+            showlegend: false,
+            hovermode: 'closest'
+        };
+        Plotly.newPlot('rho-plot', [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    function relayoutPlotsDark(dark) {
+        var bg   = dark ? '#1e1e2e' : '#fff';
+        var plot = dark ? '#2a2a3a' : '#f8f9fa';
+        var fg   = dark ? '#ccc'    : '#444';
+        var upd  = {
+            paper_bgcolor: bg,
+            plot_bgcolor:  plot,
+            'font.color':  fg,
+            'xaxis.tickfont.color': fg,
+            'yaxis.tickfont.color': fg,
+            'xaxis.title.font.color': fg,
+            'yaxis.title.font.color': fg,
+            'xaxis.gridcolor': dark ? '#444' : '#e0e0e0',
+            'yaxis.gridcolor': dark ? '#444' : '#e0e0e0',
+            'xaxis.zerolinecolor': dark ? '#555' : '#ccc',
+            'yaxis.zerolinecolor': dark ? '#555' : '#ccc'
+        };
+        ['cw-plot', 'rho-plot'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el && el.data) Plotly.relayout(id, upd);
+        });
+    }
+</script>
 <button class="dm-switch" id="dmToggle" title="Tryb ciemny / jasny"><span class="dm-knob"></span></button>
 <script>
     /* ── Dark-mode logic ── */
@@ -443,6 +576,7 @@
         document.body.classList.toggle('dark', on);
         // knob position handled by CSS via body.dark class
         localStorage.setItem('darkMode', on ? '1' : '0');
+        relayoutPlotsDark(on);
     }
     applyDark(localStorage.getItem('darkMode') === '1');
     window.addEventListener('message', function(e) {
