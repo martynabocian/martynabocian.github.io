@@ -81,6 +81,62 @@
             color: #333;
             z-index: 10001;
         }
+
+        /* ── Dark-mode toggle ── */
+        .dm-switch {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 99999;
+            width: 52px; height: 28px;
+            border-radius: 14px;
+            border: 1px solid rgba(0,0,0,.15);
+            background: #e2e2e2;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,.12);
+            transition: background .3s, border-color .3s;
+            padding: 0; margin: 0;
+            -webkit-appearance: none; appearance: none;
+        }
+        .dm-switch:hover { box-shadow: 0 3px 12px rgba(0,0,0,.2); }
+        .dm-switch .dm-knob {
+            display: block;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,.2);
+            margin: 2px;
+            transition: transform .3s;
+            position: relative;
+        }
+        .dm-switch .dm-knob::before {
+            content: '\263E';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            line-height: 1;
+            color: #888;
+            transition: content .3s;
+        }
+        body.dark .dm-switch { background: #4a9eff; border-color: rgba(255,255,255,.15); }
+        body.dark .dm-switch .dm-knob { transform: translateX(24px); background: #1e1e2e; }
+        body.dark .dm-switch .dm-knob::before { content: '\2600'; color: #ffc107; }
+
+        /* ── Dark-mode overrides ── */
+        body.dark { background-color: #121212; }
+        body.dark::before { background: rgba(18,18,18,0.92); }
+        body.dark .header-text { color: #ccc; }
+        body.dark .login-container { background: #1e1e2e; color: #ddd; box-shadow: 0 2px 10px rgba(0,0,0,.4); }
+        body.dark .login-container h2 { color: #e0e0e0; }
+        body.dark input { background: #2a2a3a; border-color: #444; color: #eee; }
+        body.dark button:not(.dm-toggle) { background: #1a6ddb; }
+        body.dark button:not(.dm-toggle):hover { background: #1459b3; }
+        body.dark .error { color: #ff6b6b; }
+        body.dark #loadingMessage { color: #ccc; }
+
     </style>
 </head>
 <body>
@@ -98,6 +154,7 @@
 
     <div id="loadingMessage">Ładowanie...</div>
     <iframe id="content" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: 10000;"></iframe>
+    <button class="dm-switch" id="dmToggle" title="Tryb ciemny / jasny"><span class="dm-knob"></span></button>
 
     <script>
         let PASSWORD_HASH = "";
@@ -137,6 +194,7 @@
                 };
 
                 iframe.style.display = 'block';
+                document.getElementById('dmToggle').style.display = 'none';
                 // Small delay to ensure authenticated flag is set before iframe loads
                 setTimeout(function() {
                     iframe.src = 'select.html';
@@ -163,9 +221,39 @@
                 document.getElementById('loadingMessage').style.display = 'block';
                 iframe.onload = function() {
                     document.getElementById('loadingMessage').style.display = 'none';
+                    // Propagate dark mode to newly loaded iframe
+                    pushDarkMode();
                 };
                 iframe.src = e.data.navigate;
             }
+            // Child asks for dark mode state
+            if (e.data === 'getDarkMode') {
+                e.source.postMessage({ darkMode: document.body.classList.contains('dark') }, '*');
+            }
+            // Child toggled dark mode
+            if (e.data && typeof e.data.setDarkMode === 'boolean') {
+                applyDark(e.data.setDarkMode);
+            }
+        });
+
+        /* ── Dark-mode logic ── */
+        function applyDark(on) {
+            document.body.classList.toggle('dark', on);
+            // knob position handled by CSS via body.dark class
+            localStorage.setItem('darkMode', on ? '1' : '0');
+        }
+        function pushDarkMode() {
+            var iframe = document.getElementById('content');
+            if (iframe && iframe.contentWindow) {
+                iframe.contentWindow.postMessage({ darkMode: document.body.classList.contains('dark') }, '*');
+            }
+        }
+        // Init from localStorage
+        applyDark(localStorage.getItem('darkMode') === '1');
+        document.getElementById('dmToggle').addEventListener('click', function() {
+            var on = !document.body.classList.contains('dark');
+            applyDark(on);
+            pushDarkMode();
         });
     </script>
 </body>

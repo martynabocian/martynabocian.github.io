@@ -177,6 +177,70 @@
             transition: transform .15s ease-in-out;
         }
         details[open] .chev { transform: rotate(180deg); }
+
+        /* ── Dark-mode toggle ── */
+        .dm-switch {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 99999;
+            width: 52px; height: 28px;
+            border-radius: 14px;
+            border: 1px solid rgba(0,0,0,.15);
+            background: #e2e2e2;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,.12);
+            transition: background .3s, border-color .3s;
+            padding: 0; margin: 0;
+            -webkit-appearance: none; appearance: none;
+        }
+        .dm-switch:hover { box-shadow: 0 3px 12px rgba(0,0,0,.2); }
+        .dm-switch .dm-knob {
+            display: block;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,.2);
+            margin: 2px;
+            transition: transform .3s;
+            position: relative;
+        }
+        .dm-switch .dm-knob::before {
+            content: '\263E';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .75rem;
+            line-height: 1;
+            color: #888;
+            transition: content .3s;
+        }
+        body.dark .dm-switch { background: #4a9eff; border-color: rgba(255,255,255,.15); }
+        body.dark .dm-switch .dm-knob { transform: translateX(24px); background: #1e1e2e; }
+        body.dark .dm-switch .dm-knob::before { content: '\2600'; color: #ffc107; }
+
+        /* ── Dark-mode overrides ── */
+        body.dark { background: #121212; color: #ddd; }
+        body.dark h1, body.dark .row-label { color: #ddd; border-color: #444; }
+        body.dark .card { background: #1e1e2e; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+        body.dark .card h2 { color: #4a9eff; }
+        body.dark .card h3 { color: #aaa; }
+        body.dark .note { color: #999; }
+        body.dark .equation-block { background: #2a2a3a; color: #ddd; }
+        body.dark .plot-frame { border-color: #444; filter: invert(1) hue-rotate(180deg); }
+        body.dark .back-btn { background: #444; }
+        body.dark .back-btn:hover { background: #555; }
+        body.dark .cardish { background: #1e1e2e; border-color: #333; }
+        body.dark .cardish-header { background: #1e1e2e; border-color: #333; }
+        body.dark .cardish-title { color: #ddd; }
+        body.dark .cardish-body { color: #ccc; }
+        body.dark .badgeish { background: #2a2a3a; border-color: #444; color: #aaa; }
+        body.dark .kbdish { background: #2a2a3a; border-color: #555; color: #ddd; }
+        body.dark .muted { color: #999; }
+        body.dark .alertish { background: rgba(74,158,255,.1); border-color: rgba(74,158,255,.25); color: #7ab8ff; }
+
     </style>
     <script>
         let authVerified = false;
@@ -372,5 +436,23 @@
         });
     });
 </script>
+<button class="dm-switch" id="dmToggle" title="Tryb ciemny / jasny"><span class="dm-knob"></span></button>
+<script>
+    /* ── Dark-mode logic ── */
+    function applyDark(on) {
+        document.body.classList.toggle('dark', on);
+        // knob position handled by CSS via body.dark class
+        localStorage.setItem('darkMode', on ? '1' : '0');
+    }
+    applyDark(localStorage.getItem('darkMode') === '1');
+    window.addEventListener('message', function(e) {
+        if (e.data && typeof e.data.darkMode === 'boolean') applyDark(e.data.darkMode);
+    });
+    window.parent.postMessage('getDarkMode', '*');
+    document.getElementById('dmToggle').addEventListener('click', function() {
+        var on = !document.body.classList.contains('dark');
+        applyDark(on);
+        window.parent.postMessage({ setDarkMode: on }, '*');
+    });
+</script>
 </body>
-</html>
