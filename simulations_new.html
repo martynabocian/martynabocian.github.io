@@ -883,8 +883,8 @@
         tr.innerHTML =
             '<td class="drag-handle">&#9776;</td>' +
             '<td>' + copRowCount + '</td>' +
-            '<td><input type="text" inputmode="decimal" id="cop_Qg_' + copRowCount + '" placeholder="Q_g" oninput="calcCOP()"></td>' +
-            '<td><input type="text" inputmode="decimal" id="cop_Eel_' + copRowCount + '" placeholder="E_el" oninput="calcCOP()"></td>' +
+            '<td><input type="text" inputmode="decimal" id="cop_Qg_' + copRowCount + '" placeholder="np. 10" oninput="calcCOP()"></td>' +
+            '<td><input type="text" inputmode="decimal" id="cop_Eel_' + copRowCount + '" placeholder="np. 2,5" oninput="calcCOP()"></td>' +
             '<td class="result-cell" id="cop_res_' + copRowCount + '">&mdash;</td>' +
             '<td><button class="remove-row-btn" onclick="removeCopRow(' + copRowCount + ')">&times;</button></td>';
         tbody.appendChild(tr);
@@ -995,6 +995,7 @@
             line: { color: '#007bff', width: 2 },
             name: 'COP\u209b'
         };
+        var dark = document.body.classList.contains('dark');
         var layout = {
             title: { text: 'Sezonowy COP\u209b', font: { size: 14 } },
             xaxis: {
@@ -1007,9 +1008,9 @@
                 zeroline: false
             },
             margin: { t: 40, r: 20, b: 50, l: 55 },
-            paper_bgcolor: '#fff',
-            plot_bgcolor: '#f8f9fa',
-            font: { family: 'system-ui, sans-serif' }
+            paper_bgcolor: dark ? '#1e1e2e' : '#fff',
+            plot_bgcolor: dark ? '#2a2a3a' : '#f8f9fa',
+            font: { family: 'system-ui, sans-serif', color: dark ? '#ccc' : '#444' }
         };
         Plotly.newPlot('cop-plot', [trace], layout, { responsive: true });
     }
