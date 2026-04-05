@@ -238,6 +238,23 @@
         .drag-handle:active { cursor: grabbing; }
         #cop-tbody tr.drag-over { border-top: 2px solid #007bff; }
         #cop-tbody tr.dragging { opacity: 0.4; }
+        .cw-section {
+            display: flex;
+            gap: 1.2rem;
+            align-items: stretch;
+        }
+        .cw-section .cw-left {
+            flex: 1;
+            min-width: 0;
+        }
+        .cw-section .cw-right {
+            flex: 0 0 320px;
+            min-height: 160px;
+        }
+        @media (max-width: 900px) {
+            .cw-section { flex-direction: column; }
+            .cw-section .cw-right { flex: none; width: 100%; min-height: 220px; }
+        }
     </style>
     <script>
         let authVerified = false;
@@ -358,15 +375,25 @@
 
         <!-- rho_w -->
         <h3>Gęstość wody $\rho_w(T'_{\text{śr}})$</h3>
-        <div class="equation-block">
-            $$\rho_w = 1000 - \frac{0{,}00198582 \cdot (T'_{\text{śr}} + 10) \cdot (T'_{\text{śr}} - 277)^2}{T'_{\text{śr}} - 205{,}8} \quad [\text{kg/m}^3]$$
+        <div class="cw-section">
+            <div class="cw-left">
+                <div class="equation-block">
+                    $$\rho_w = 1000 - \frac{0{,}00198582 \cdot (T'_{\text{śr}} + 10) \cdot (T'_{\text{śr}} - 277)^2}{T'_{\text{śr}} - 205{,}8} \quad [\text{kg/m}^3]$$
+                </div>
+                <div class="result-box" id="res_rho">&mdash;</div>
+            </div>
+            <div class="cw-right" id="rho-plot"></div>
         </div>
-        <div class="result-box" id="res_rho">&mdash;</div>
 
         <!-- c_w -->
         <h3>Ciepło właściwe wody $c_w(T_{\text{śr}})$</h3>
-        <p class="note">Wartość interpolowana z tablicy właściwości wody (zakres 0–100 °C, dokładność 0,01 °C).</p>
-        <div class="result-box" id="res_cw">&mdash;</div>
+        <div class="cw-section">
+            <div class="cw-left">
+                <p class="note">Wartość interpolowana z tablicy właściwości wody (zakres 0–100 °C, dokładność 0,01 °C).</p>
+                <div class="result-box" id="res_cw">&mdash;</div>
+            </div>
+            <div class="cw-right" id="cw-plot"></div>
+        </div>
 
         <!-- Q_cwu -->
         <h3>Moc wymiennika $Q_{\text{cwu śr}}$</h3>
@@ -502,7 +529,114 @@
                     waterData.push([temp, rho, cp]);
                 }
             }
+            renderCwPlot();
+            renderRhoPlot();
         });
+
+    function renderCwPlot() {
+        if (!waterData || waterData.length === 0) return;
+        // Sample every N points so the chart stays light
+        const step = Math.max(1, Math.floor(waterData.length / 200));
+        const xVals = [], yVals = [];
+        for (let i = 0; i < waterData.length; i += step) {
+            xVals.push(waterData[i][0]);
+            yVals.push(waterData[i][2]);
+        }
+        // Make sure last point is included
+        if (xVals[xVals.length - 1] !== waterData[waterData.length - 1][0]) {
+            xVals.push(waterData[waterData.length - 1][0]);
+            yVals.push(waterData[waterData.length - 1][2]);
+        }
+        const trace = {
+            x: xVals, y: yVals,
+            mode: 'lines',
+            line: { color: '#007bff', width: 2 },
+            showlegend: false,
+            hovertemplate: 'T<sub>śr</sub> = %{x:.1f} °C<br>c<sub>w</sub> = %{y:.4f} kJ/(kg·K)<extra></extra>'
+        };
+        const layout = {
+            margin: { l: 52, r: 10, t: 10, b: 40 },
+            xaxis: { title: { text: 'T<sub>śr</sub> [°C]', font: { size: 11 } }, tickfont: { size: 10 } },
+            yaxis: { title: { text: 'c<sub>w</sub> [kJ/(kg·K)]', font: { size: 11 } }, tickfont: { size: 10 } },
+            plot_bgcolor: '#f8f9fa',
+            paper_bgcolor: 'white',
+            showlegend: false,
+            hovermode: 'closest'
+        };
+        Plotly.newPlot('cw-plot', [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    function renderRhoPlot() {
+        if (!waterData || waterData.length === 0) return;
+        // Generate rho from formula for 0-100°C range
+        const xVals = [], yVals = [];
+        for (let t = 0; t <= 100; t += 0.5) {
+            const TK = t + 273.15;
+            const rho = 1000 - (0.00198582 * (TK + 10) * Math.pow(TK - 277, 2)) / (TK - 205.8);
+            xVals.push(t);
+            yVals.push(rho);
+        }
+        const trace = {
+            x: xVals, y: yVals,
+            mode: 'lines',
+            line: { color: '#007bff', width: 2 },
+            showlegend: false,
+            hovertemplate: 'T\u2032<sub>śr</sub> = %{x:.1f} °C<br>ρ<sub>w</sub> = %{y:.2f} kg/m³<extra></extra>'
+        };
+        const layout = {
+            margin: { l: 52, r: 10, t: 10, b: 40 },
+            xaxis: { title: { text: 'T<sub>śr</sub> [°C]', font: { size: 11 } }, tickfont: { size: 10 } },
+            yaxis: { title: { text: 'ρ<sub>w</sub> [kg/m³]', font: { size: 11 } }, tickfont: { size: 10 } },
+            plot_bgcolor: '#f8f9fa',
+            paper_bgcolor: 'white',
+            showlegend: false,
+            hovermode: 'closest'
+        };
+        Plotly.newPlot('rho-plot', [trace], layout, { responsive: true, displayModeBar: false });
+    }
+
+    function clearRhoMarker() {
+        const plotDiv = document.getElementById('rho-plot');
+        if (plotDiv && plotDiv.data && plotDiv.data.length > 1) {
+            Plotly.react('rho-plot', [plotDiv.data[0]], plotDiv.layout, { responsive: true, displayModeBar: false });
+        }
+    }
+
+    function updateRhoMarker(tsr, rho) {
+        const marker = {
+            x: [tsr], y: [rho],
+            mode: 'markers',
+            marker: { color: '#dc3545', size: 9, symbol: 'circle' },
+            hovertemplate: 'T<sub>śr</sub> = %{x:.2f} °C<br>ρ<sub>w</sub> = %{y:.2f} kg/m³<extra></extra>',
+            showlegend: false
+        };
+        const plotDiv = document.getElementById('rho-plot');
+        if (plotDiv && plotDiv.data && plotDiv.data.length > 0) {
+            Plotly.react('rho-plot', [plotDiv.data[0], marker], plotDiv.layout, { responsive: true, displayModeBar: false });
+        }
+    }
+
+    function clearCwMarker() {
+        const plotDiv = document.getElementById('cw-plot');
+        if (plotDiv && plotDiv.data && plotDiv.data.length > 1) {
+            Plotly.react('cw-plot', [plotDiv.data[0]], plotDiv.layout, { responsive: true, displayModeBar: false });
+        }
+    }
+
+    function updateCwMarker(tsr, cw) {
+        const marker = {
+            x: [tsr], y: [cw],
+            mode: 'markers',
+            marker: { color: '#dc3545', size: 9, symbol: 'circle' },
+            hovertemplate: 'T<sub>śr</sub> = %{x:.2f} °C<br>c<sub>w</sub> = %{y:.4f} kJ/(kg·K)<extra></extra>',
+            showlegend: false
+        };
+        const plotDiv = document.getElementById('cw-plot');
+        if (plotDiv && plotDiv.data && plotDiv.data.length > 0) {
+            // Keep the line trace, add/replace marker trace
+            Plotly.react('cw-plot', [plotDiv.data[0], marker], plotDiv.layout, { responsive: true, displayModeBar: false });
+        }
+    }
 
     function interpolateCol(T, colIdx) {
         // colIdx: 1 = rho, 2 = cp
@@ -569,15 +703,15 @@
             });
         }
 
-        if (vT1 === '' || vT2 === '') { setAllP2('—'); return; }
-        if (isNaN(T1) || isNaN(T2)) { setAllP2('Wartości muszą być liczbami'); return; }
+        if (vT1 === '' || vT2 === '') { setAllP2('—'); clearCwMarker(); clearRhoMarker(); return; }
+        if (isNaN(T1) || isNaN(T2)) { setAllP2('Wartości muszą być liczbami'); clearCwMarker(); clearRhoMarker(); return; }
         if (T1 < 0 || T1 > 100 || T2 < 0 || T2 > 100) {
             setAllP2('<i>T</i><sub>1</sub> i <i>T</i><sub>2</sub> muszą być w zakresie 0–100 °C');
-            return;
+            clearCwMarker(); clearRhoMarker(); return;
         }
         if (T1 <= T2) {
             setAllP2('<i>T</i><sub>1</sub> musi być większe od <i>T</i><sub>2</sub>');
-            return;
+            clearCwMarker(); clearRhoMarker(); return;
         }
 
         // T_sr
@@ -594,17 +728,19 @@
         lastRho = 1000 - (0.00198582 * (TsrK + 10) * Math.pow(TsrK - 277, 2)) / (TsrK - 205.8);
         document.getElementById('res_rho').innerHTML =
             '<b>\u03C1<sub>w</sub>(' + fmt(TsrK,2) + ' K)</b> = <strong>' + fmt(lastRho,2) + ' kg/m\u00B3</strong>';
+        updateRhoMarker(lastTsr, lastRho);
 
         if (lastTsr < 0 || lastTsr > 100) {
             document.getElementById('res_cw').innerHTML = 'T<sub>śr</sub> poza zakresem tablicy (0–100 °C)';
             document.getElementById('res_Qcwu').textContent = '—';
-            return;
+            clearCwMarker(); clearRhoMarker(); return;
         }
 
         // c_w (CSV has cp in kJ/(kg·K), convert to J/(kg·K) for Q formula)
         lastCw = interpolateCol(lastTsr, 2); // kJ/(kg·K)
         document.getElementById('res_cw').innerHTML =
             '<b>c<sub>w</sub>(' + fmt(lastTsr,2) + ' °C)</b> = <strong>' + fmt(lastCw,3) + ' kJ/(kg\u00B7K)</strong>';
+        updateCwMarker(lastTsr, lastCw);
 
         // Q_cwu
         if (isNaN(Vdot)) {
@@ -811,6 +947,8 @@
     addCopRow();
     // Init empty plot
     calcCOP();
+    // Init rho plot (formula-based, no CSV needed)
+    renderRhoPlot();
 
     // ===== Row 4 =====
     function calcPumpWork() {
