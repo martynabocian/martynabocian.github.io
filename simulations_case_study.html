@@ -89,6 +89,94 @@
             margin: 1rem 0 0.3rem;
             color: #495057;
         }
+
+        /* ── Instrukcja obsługi (z plot.html) ── */
+        .container-ish {
+            max-width: 1200px;
+            margin: 0 auto 10px;
+            padding: 0;
+        }
+        .cardish {
+            background: #ffffff;
+            border: 1px solid rgba(0,0,0,.125);
+            border-radius: .5rem;
+            box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+            overflow: hidden;
+        }
+        .cardish-header {
+            padding: .75rem 1rem;
+            background: #ffffff;
+            border-bottom: 1px solid rgba(0,0,0,.125);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            list-style: none;
+        }
+        .cardish-header::-webkit-details-marker { display: none; }
+        .cardish-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .cardish-body {
+            padding: 1rem;
+        }
+        .badgeish {
+            display: inline-block;
+            padding: .25rem .5rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            border: 1px solid rgba(0,0,0,.125);
+            background: #f1f3f5;
+            color: #495057;
+            white-space: nowrap;
+        }
+        .rowish {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem;
+        }
+        .listish {
+            margin: 0;
+            padding-left: 1.1rem;
+        }
+        .listish li {
+            margin: .35rem 0;
+            line-height: 1.45;
+        }
+        .kbdish {
+            display: inline-block;
+            padding: .1rem .4rem;
+            border-radius: .35rem;
+            border: 1px solid rgba(0,0,0,.2);
+            background: #f8f9fa;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: .85em;
+            white-space: nowrap;
+        }
+        .muted {
+            color: #6c757d;
+            margin: 0 0 .75rem 0;
+            line-height: 1.45;
+        }
+        .alertish {
+            margin-top: .75rem;
+            padding: .75rem 1rem;
+            border-radius: .5rem;
+            border: 1px solid rgba(13,110,253,.25);
+            background: rgba(13,110,253,.08);
+            color: #084298;
+            line-height: 1.45;
+        }
+        .chev {
+            font-size: 1rem;
+            color: #6c757d;
+            transition: transform .15s ease-in-out;
+        }
+        details[open] .chev { transform: rotate(180deg); }
     </style>
     <script>
         let authVerified = false;
@@ -112,6 +200,52 @@
 <div class="container">
     <button class="back-btn" onclick="goBack()">&#8592; Powrót</button>
     <h1>Obliczenia wykonane dla budynku &ndash; studium przypadku</h1>
+
+    <div class="container-ish" id="instrukcja-obslugi">
+      <details class="accordionish cardish">
+        <summary class="cardish-header">
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <h2 class="cardish-title">Instrukcja obsługi wykresu</h2>
+            <span class="badgeish">kliknij, aby zwinąć/rozwinąć</span>
+          </div>
+          <span class="chev">⌄</span>
+        </summary>
+
+        <div class="cardish-body">
+          <p class="muted">
+            Wykres jest interaktywny. Poniżej znajdziesz krótką ściągę: jak przybliżać, przesuwać widok i sterować seriami z legendy.
+          </p>
+
+          <div class="rowish">
+            <div>
+              <strong>Na samym wykresie</strong>
+              <ul class="listish">
+                <li><b>Podgląd wartości:</b> przesuń kursor po wykresie.</li>
+                <li><b>Przybliżenie (zoom):</b> kliknij i przeciągnij myszą po obszarze do powiększenia.</li>
+                <li><b>Przesuwanie widoku:</b> złap wykres i przeciągnij, aby przesunąć w czasie.</li>
+                <li><b>Reset widoku:</b> <span class="kbdish">podwójny klik</span> w obszar wykresu.</li>
+                <li><b>Kółko myszy:</b> w wielu przypadkach przybliża/oddala (jeśli nie — użyj zoomu prostokątem).</li>
+              </ul>
+            </div>
+
+            <div>
+              <strong>Legenda i suwak czasu</strong>
+              <ul class="listish">
+                <li><b>Ukryj/pokaż serię:</b> kliknij jej nazwę w legendzie.</li>
+                <li><b>Pokaż tylko jedną serię:</b> <span class="kbdish">dwuklik</span> na nazwie w legendzie.</li>
+                <li><b>Przywróć wszystkie serie:</b> ponownie <span class="kbdish">dwuklik</span> (albo reset widoku).</li>
+                <li><b>Suwak czasu:</b> przeciągnij lewy/prawy uchwyt, aby ustawić zakres; przeciągnij zaznaczenie, aby przesunąć zakres.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="alertish">
+            Wskazówka: jeśli przeciąganie „zamiast przesuwać" robi przybliżenie (lub odwrotnie),
+            skorzystaj z ikon w prawym górnym rogu wykresu (tryb przesuwania / tryb przybliżania).
+          </div>
+        </div>
+      </details>
+    </div>
 
     <div class="row-label">1. Obliczenie zużycia ciepła potrzebnego do podgrzewu ciepłej wody</div>
 
